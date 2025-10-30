@@ -9,14 +9,44 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "expo": "~54.0.12",
-    "expo-status-bar": "~3.0.8",
-    "react": "19.1.0",
-    "react-native": "0.81.4"
+    "@expo/vector-icons": "^14.0.4",
+    "@react-native-async-storage/async-storage": "2.1.2",
+    "@react-native-voice/voice": "^3.2.4",
+    "@react-navigation/bottom-tabs": "^6.5.11",
+    "@react-navigation/native": "^6.1.9",
+    "@react-navigation/stack": "^6.3.20",
+    "@supabase/supabase-js": "^2.39.3",
+    "expo": "~53.0.23",
+    "expo-av": "~15.0.1",
+    "expo-blur": "~14.0.1",
+    "expo-crypto": "~13.0.2",
+    "expo-device": "~7.1.4",
+    "expo-file-system": "~18.1.11",
+    "expo-haptics": "~13.0.1",
+    "expo-linear-gradient": "~14.0.1",
+    "expo-notifications": "~0.31.4",
+    "expo-secure-store": "~13.0.2",
+    "expo-sharing": "~13.1.5",
+    "expo-status-bar": "~2.2.3",
+    "expo-web-browser": "~14.2.0",
+    "lottie-react-native": "7.1.0",
+    "metro": "^0.82.5",
+    "metro-config": "^0.82.5",
+    "metro-resolver": "^0.82.5",
+    "react": "^19.0.0",
+    "react-dom": "19.0.0",
+    "react-native": "^0.79.5",
+    "react-native-gesture-handler": "~2.20.2",
+    "react-native-reanimated": "~3.16.1",
+    "react-native-safe-area-context": "4.12.0",
+    "react-native-screens": "~4.1.0",
+    "react-native-svg": "15.8.0",
+    "react-native-web": "^0.20.0",
+    "react-native-webview": "13.13.5"
   },
   "devDependencies": {
-    "@types/react": "~19.1.0",
-    "typescript": "~5.9.2"
+    "@types/react": "~19.0.10",
+    "typescript": "~5.8.3"
   },
   "private": true
 }

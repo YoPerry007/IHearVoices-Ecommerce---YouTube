@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Verification - IHearVoices</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #334155 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #F8FAFC;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 500px;
+            width: 90%;
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(51, 65, 85, 0.3);
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: #10B981;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            font-size: 36px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(16, 185, 129, 0.3);
+            border-top: 4px solid #10B981;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 24px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: #10B981;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            font-size: 40px;
+            color: white;
+            opacity: 0;
+            transform: scale(0.5);
+            animation: successPop 0.6s ease-out forwards;
+        }
+
+        @keyframes successPop {
+            0% {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .error-icon {
+            width: 80px;
+            height: 80px;
+            background: #EF4444;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            font-size: 40px;
+            color: white;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: #F8FAFC;
+        }
+
+        p {
+            font-size: 16px;
+            color: #CBD5E1;
+            margin-bottom: 24px;
+        }
+
+        .btn {
+            display: inline-block;
+            background: #10B981;
+            color: white;
+            padding: 12px 32px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            margin: 8px;
+        }
+
+        .btn:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(51, 65, 85, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(71, 85, 105, 0.8);
+            transform: translateY(-2px);
+        }
+
+        .footer {
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid rgba(51, 65, 85, 0.3);
+            font-size: 14px;
+            color: #94A3B8;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Ghana flag colors accent */
+        .ghana-accent {
+            background: linear-gradient(90deg, #EF4444 33%, #F59E0B 33% 66%, #10B981 66%);
+            height: 4px;
+            width: 100%;
+            border-radius: 2px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 24px;
+                margin: 20px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            .btn {
+                width: 100%;
+                margin: 8px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="ghana-accent"></div>
+        
+        <!-- Loading State -->
+        <div id="loading-state">
+            <div class="loading-spinner"></div>
+            <h1>Verifying Your Email</h1>
+            <p>Please wait while we confirm your email address...</p>
+        </div>
+
+        <!-- Success State -->
+        <div id="success-state" class="hidden">
+            <div class="success-icon">✓</div>
+            <h1>Email Verified Successfully!</h1>
+            <p>Welcome to IHearVoices! Your email has been confirmed and your account is now active.</p>
+            <a href="#" id="open-app-btn" class="btn">Open IHearVoices App</a>
+            <a href="https://ihearvoices.com" class="btn btn-secondary">Visit Website</a>
+        </div>
+
+        <!-- Error State -->
+        <div id="error-state" class="hidden">
+            <div class="error-icon">✗</div>
+            <h1>Verification Failed</h1>
+            <p id="error-message">We couldn't verify your email. The link may have expired or is invalid.</p>
+            <a href="#" id="retry-btn" class="btn">Try Again</a>
+            <a href="https://ihearvoices.com/support" class="btn btn-secondary">Get Help</a>
+        </div>
+
+        <div class="footer">
+            <p>
+                <strong>IHearVoices</strong><br>
+                Premium Voice-Activated Shopping for Ghana 🇬🇭
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Supabase configuration
+        const SUPABASE_URL = 'https://jodlypsnizdowjogpgxl.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpvZGx5cHNuaXpkb3dqb2dwZ3hsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk1MTE2MTMsImV4cCI6MjA3NTA4NzYxM30.DqdqbmordzJysQdznli9LDn9gKA4Wi0T20ofFF_gvKo';
+
+        // App deep link configuration
+        const APP_SCHEME = 'ihearvoices://';
+        const FALLBACK_URL = 'https://ihearvoices.com';
+
+        // DOM elements
+        const loadingState = document.getElementById('loading-state');
+        const successState = document.getElementById('success-state');
+        const errorState = document.getElementById('error-state');
+        const errorMessage = document.getElementById('error-message');
+        const openAppBtn = document.getElementById('open-app-btn');
+        const retryBtn = document.getElementById('retry-btn');
+
+        // Extract tokens from URL hash
+        function getTokensFromUrl() {
+            const hash = window.location.hash.substring(1);
+            const params = new URLSearchParams(hash);
+            
+            return {
+                access_token: params.get('access_token'),
+                refresh_token: params.get('refresh_token'),
+                expires_at: params.get('expires_at'),
+                expires_in: params.get('expires_in'),
+                token_type: params.get('token_type'),
+                type: params.get('type')
+            };
+        }
+
+        // Verify email with Supabase
+        async function verifyEmail() {
+            try {
+                const tokens = getTokensFromUrl();
+                
+                if (!tokens.access_token || !tokens.refresh_token) {
+                    throw new Error('Missing authentication tokens in URL');
+                }
+
+                // Verify the session with Supabase
+                const response = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${tokens.access_token}`,
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to verify email');
+                }
+
+                const userData = await response.json();
+                
+                // Check if email is verified
+                if (userData && userData.email_confirmed_at) {
+                    showSuccess();
+                    
+                    // Store tokens for app deep link
+                    const deepLinkUrl = `${APP_SCHEME}auth/callback?access_token=${tokens.access_token}&refresh_token=${tokens.refresh_token}&expires_at=${tokens.expires_at}&type=signup`;
+                    openAppBtn.href = deepLinkUrl;
+                    
+                    // Clear URL hash for security
+                    setTimeout(() => {
+                        window.history.replaceState(null, null, window.location.pathname);
+                    }, 1000);
+                } else {
+                    throw new Error('Email verification incomplete');
+                }
+
+            } catch (error) {
+                console.error('Email verification error:', error);
+                showError(error.message);
+            }
+        }
+
+        // Show success state
+        function showSuccess() {
+            loadingState.classList.add('hidden');
+            successState.classList.remove('hidden');
+            successState.classList.add('fade-in');
+            
+            // Update page title
+            document.title = 'Email Verified - IHearVoices';
+        }
+
+        // Show error state
+        function showError(message) {
+            loadingState.classList.add('hidden');
+            errorState.classList.remove('hidden');
+            errorState.classList.add('fade-in');
+            errorMessage.textContent = message || 'An unexpected error occurred.';
+            
+            // Update page title
+            document.title = 'Verification Failed - IHearVoices';
+        }
+
+        // Handle app opening
+        function handleOpenApp() {
+            // Try to open the app
+            const deepLinkUrl = openAppBtn.href;
+            window.location.href = deepLinkUrl;
+            
+            // Fallback to website after a delay
+            setTimeout(() => {
+                const userAgent = navigator.userAgent.toLowerCase();
+                if (userAgent.includes('android')) {
+                    window.location.href = 'https://play.google.com/store/apps/details?id=com.ihearvoices.app';
+                } else if (userAgent.includes('iphone') || userAgent.includes('ipad')) {
+                    window.location.href = 'https://apps.apple.com/app/ihearvoices';
+                } else {
+                    window.location.href = FALLBACK_URL;
+                }
+            }, 2000);
+        }
+
+        // Event listeners
+        openAppBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            handleOpenApp();
+        });
+
+        retryBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            location.reload();
+        });
+
+        // Initialize verification process
+        document.addEventListener('DOMContentLoaded', () => {
+            // Add a small delay for better UX
+            setTimeout(() => {
+                verifyEmail();
+            }, 1500);
+        });
+
+        // Handle page visibility change (when user returns from app)
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden && successState.classList.contains('hidden') === false) {
+                // User returned to page after trying to open app
+                setTimeout(() => {
+                    window.location.href = FALLBACK_URL;
+                }, 1000);
+            }
+        });
+    </script>
+</body>
+</html>

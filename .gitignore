@@ -32,6 +32,7 @@ yarn-error.*
 
 # local env files
 .env*.local
+.env
 
 # typescript
 *.tsbuildinfo
@@ -39,3 +40,43 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# Python ML Service
+python_ml_service/venv/
+python_ml_service/__pycache__/
+python_ml_service/*.pyc
+python_ml_service/*.pyo
+python_ml_service/*.pyd
+python_ml_service/.Python
+python_ml_service/pip-log.txt
+python_ml_service/pip-delete-this-directory.txt
+
+# Audio files (temporary recordings)
+*.wav
+*.mp3
+*.m4a
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/
+.tmp/
+
+# Build artifacts
+build/
+dist/
