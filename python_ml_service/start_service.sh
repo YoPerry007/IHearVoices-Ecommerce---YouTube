@@ -27,15 +27,13 @@ fi
 echo "🔧 Activating virtual environment..."
 source venv/bin/activate
 
-# Install dependencies if requirements.txt exists
-if [ -f "requirements.txt" ]; then
-    echo "📚 Installing dependencies..."
-    pip install --upgrade pip
-    pip install -r requirements.txt
-    if [ $? -ne 0 ]; then
-        echo "❌ Failed to install dependencies"
-        exit 1
-    fi
+# Install dependencies
+echo "📚 Installing dependencies..."
+pip install --upgrade pip
+pip install -r requirements_simple.txt
+if [ $? -ne 0 ]; then
+    echo "❌ Failed to install dependencies"
+    exit 1
 fi
 
 # Start the service
@@ -47,4 +45,4 @@ echo
 echo "Press Ctrl+C to stop the service"
 echo
 
-python app.py
+python3 simple_voice_service.py

@@ -1,4 +1,5 @@
 import * as FileSystem from 'expo-file-system';
+import { getMLServiceUrl } from '../config/mlServiceUrl';
 
 export interface PythonMLResult {
   success: boolean;
@@ -41,7 +42,7 @@ export interface PythonMLServiceStatus {
 }
 
 export class PythonMLService {
-  private static baseUrl = 'http://172.20.10.8:5000'; // Windows machine IP address
+  private static baseUrl = getMLServiceUrl();
   private static timeout = 10000; // 10 seconds timeout
   private static lastHealthCheck: PythonMLServiceStatus | null = null;
   private static healthCheckInterval: NodeJS.Timeout | null = null;
@@ -185,12 +186,11 @@ export class PythonMLService {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), this.timeout);
 
-      const response = await fetch(`${this.baseUrl}/recognize`, {
+      const response = await fetch(`${this.baseUrl}/process_audio`, {
         method: 'POST',
         body: formData,
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+        // Do NOT set Content-Type manually — fetch/React Native will auto-set
+        // the correct multipart/form-data boundary string
         signal: controller.signal,
       });
 
@@ -202,9 +202,14 @@ export class PythonMLService {
         throw new Error(result.error || `HTTP ${response.status}`);
       }
 
+      // Map backend 'type' to frontend 'intent' if needed
+      if (result.command && !result.command.intent && result.command.type) {
+        result.command.intent = result.command.type;
+      }
+
       console.log('✅ Python ML recognition successful:', {
         transcript: result.transcript?.substring(0, 50) + '...',
-        confidence: `${(result.confidence * 100).toFixed(1)}%`,
+        confidence: `${((result.confidence || 0) * 100).toFixed(1)}%`,
         engine: result.engine,
         intent: result.command?.intent,
       });
@@ -292,7 +297,7 @@ export class PythonMLService {
       ],
       requirements: [
         'Python 3.8+ with ML libraries installed',
-        'Flask service running on 172.20.10.8:5000',
+        'Flask service running on localhost:5000 (or configured EXPO_PUBLIC_ML_SERVICE_URL)',
         'Network connectivity to Python service',
         'Microphone permissions for audio recording',
       ],

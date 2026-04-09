@@ -2,8 +2,8 @@ import { createClient } from '@supabase/supabase-js';
 import * as SecureStore from 'expo-secure-store';
 
 // Supabase configuration
-const supabaseUrl = 'https://jodlypsnizdowjogpgxl.supabase.co';
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpvZGx5cHNuaXpkb3dqb2dwZ3hsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk1MTE2MTMsImV4cCI6MjA3NTA4NzYxM30.DqdqbmordzJysQdznli9LDn9gKA4Wi0T20ofFF_gvKo';
+const supabaseUrl = 'https://ateiysixigcfpuopjhlb.supabase.co';
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF0ZWl5c2l4aWdjZnB1b3BqaGxiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1NDY3OTQsImV4cCI6MjA5MDEyMjc5NH0.tS4Rbm4mOVXgKNVlKf_nx0UsyZPbq1KctA_OniL1ATA';
 
 // Custom storage implementation using Expo SecureStore with error handling
 const ExpoSecureStoreAdapter = {

@@ -1,6 +1,7 @@
 import { Audio } from 'expo-av';
 import * as FileSystem from 'expo-file-system';
 import * as Haptics from 'expo-haptics';
+import { getMLServiceUrl } from '../config/mlServiceUrl';
 import VoiceCommandParser, { ParsedCommand } from './VoiceCommandParser';
 
 export interface ExpoVoiceResult {
@@ -92,15 +93,15 @@ export class ExpoVoiceService {
       const recordingOptions = {
         android: {
           extension: '.wav',
-          outputFormat: 2, // MPEG_4
-          audioEncoder: 3, // AAC
+          outputFormat: Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_DEFAULT,
+          audioEncoder: Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_DEFAULT,
           sampleRate: 16000,
           numberOfChannels: 1,
           bitRate: 128000,
         },
         ios: {
           extension: '.wav',
-          audioQuality: 1, // HIGH
+          audioQuality: Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_HIGH,
           sampleRate: 16000,
           numberOfChannels: 1,
           bitRate: 128000,
@@ -172,7 +173,7 @@ export class ExpoVoiceService {
 
       // Process with Python ML service (REQUIRED)
       try {
-        const pythonResult = await this.processWithPythonML(audioUri, options);
+        const pythonResult = await this.processWithPythonML(audioUri, options, duration);
         
         // Clean up audio file
         await this.cleanupAudioFile(audioUri);
@@ -239,7 +240,7 @@ export class ExpoVoiceService {
   /**
    * Process audio with Python ML service
    */
-  private static async processWithPythonML(audioUri: string, options: ExpoVoiceOptions): Promise<ExpoVoiceResult> {
+  private static async processWithPythonML(audioUri: string, options: ExpoVoiceOptions, duration: number = 0): Promise<ExpoVoiceResult> {
     try {
       console.log('🐍 Attempting Python ML processing...');
 
@@ -247,9 +248,15 @@ export class ExpoVoiceService {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 5000);
       
-      const healthResponse = await fetch('http://172.20.10.8:5000/health', {
+      const baseUrl = getMLServiceUrl();
+      console.log(`🔗 Using Python ML Service URL: ${baseUrl}`);
+      
+      const healthResponse = await fetch(`${baseUrl}/health`, {
         method: 'GET',
         signal: controller.signal,
+      }).catch(err => {
+        console.warn('⚠️ Health check fetch failed:', err.message);
+        throw new Error(`Service unreachable at ${baseUrl}`);
       });
       
       clearTimeout(timeoutId);
@@ -274,12 +281,11 @@ export class ExpoVoiceService {
       const controller2 = new AbortController();
       const timeoutId2 = setTimeout(() => controller2.abort(), 15000);
       
-      const response = await fetch('http://172.20.10.8:5000/process_audio', {
+      const response = await fetch(`${baseUrl}/process_audio`, {
         method: 'POST',
         body: formData,
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+        // Do NOT set Content-Type manually — fetch/React Native will auto-set
+        // the correct multipart/form-data boundary string
         signal: controller2.signal,
       });
       
@@ -302,6 +308,9 @@ export class ExpoVoiceService {
       if (result.command && result.command.type !== 'unknown') {
         mappedCommand = this.mapPythonCommandToVoiceCommand(result.command);
       }
+
+      // Log to database for debugging (as requested by user)
+      this.logToDatabase(result.transcript, result.command?.type, !!mappedCommand, duration);
 
       return {
         success: true,
@@ -406,6 +415,27 @@ export class ExpoVoiceService {
       duration: this.isRecording ? Date.now() - this.startTime : 0,
       isSupported: this.isSupported(),
     };
+  }
+
+  /**
+   * Log voice command to Supabase for debugging
+   */
+  private static async logToDatabase(text: string, intent: string, success: boolean, duration: number): Promise<void> {
+    try {
+      const { supabase } = require('../config/supabase');
+      if (!supabase) return;
+
+      await supabase.from('voice_commands').insert([{
+        command_text: text,
+        recognized_intent: intent,
+        success: success,
+        response_time_ms: duration,
+        created_at: new Date().toISOString()
+      }]);
+      console.log('📊 Voice command logged to Supabase');
+    } catch (error) {
+      console.warn('⚠️ Failed to log voice command to DB:', error);
+    }
   }
 
   /**

@@ -4,6 +4,7 @@ import { Audio } from 'expo-av';
 import PythonMLService, { PythonMLResult, PythonMLServiceStatus } from './PythonMLService';
 import WebSpeechService, { WebSpeechResult } from './WebSpeechService';
 import VoiceCommandParser, { ParsedCommand, VoiceCommand } from './VoiceCommandParser';
+import { getMLServiceUrl } from '../config/mlServiceUrl';
 
 export interface HybridVoiceState {
   isRecording: boolean;
@@ -66,7 +67,7 @@ export class HybridVoiceAssistant {
   private options: HybridVoiceOptions = {
     preferPythonML: true,
     enableWebSpeechFallback: true,
-    pythonMLUrl: 'http://172.20.10.8:5000',
+    pythonMLUrl: getMLServiceUrl(),
     language: 'en-US',
     minConfidence: 0.6,
     maxRecordingDuration: 15000,

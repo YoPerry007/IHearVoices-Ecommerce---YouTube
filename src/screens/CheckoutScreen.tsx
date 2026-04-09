@@ -10,7 +10,7 @@
  * - Database integration with order creation
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -53,6 +53,7 @@ const CheckoutScreen: React.FC<CheckoutScreenProps> = ({ navigation }) => {
   // Payment state
   const [currentPaymentReference, setCurrentPaymentReference] = useState<string>('');
   const [orderCreated, setOrderCreated] = useState<boolean>(false);
+  const orderCreatedRef = useRef<boolean>(false);
   const [processedPayments, setProcessedPayments] = useState<Set<string>>(new Set());
   
   // Shipping form state
@@ -140,6 +141,7 @@ const CheckoutScreen: React.FC<CheckoutScreenProps> = ({ navigation }) => {
 
     setIsProcessing(true);
     setOrderCreated(false); // Reset order creation flag for new payment
+    orderCreatedRef.current = false;
     setProcessedPayments(new Set()); // Clear processed payments for new transaction
 
     try {
@@ -316,6 +318,7 @@ const CheckoutScreen: React.FC<CheckoutScreenProps> = ({ navigation }) => {
       // Mark this payment as being processed immediately
       setProcessedPayments(prev => new Set([...prev, paymentReference]));
       setOrderCreated(true);
+      orderCreatedRef.current = true;
       
       // Create order in database
       const order = await OrderService.createOrder({
@@ -485,13 +488,86 @@ const CheckoutScreen: React.FC<CheckoutScreenProps> = ({ navigation }) => {
       });
       
       console.log('WebBrowser result:', result);
+      
+      if (result.type === 'opened') {
+        // This happens on Android when Expo cannot open an embedded Custom Tab
+        // and instead launches an external browser app. The method returns immediately.
+        console.log('Browser launched externally and returned "opened" immediately.');
+        console.log('Leaving payment monitor running in background...');
+        
+        // We unlock the checkout button so the user can try again if they cancel outside
+        setIsProcessing(false);
+        return;
+      }
+      
       console.log('Browser closed, checking final payment status...');
       
-      // Stop monitoring and check final status
+      // Stop monitoring interval
       clearInterval(paymentMonitor);
       
-      // Payment monitoring already handled order creation and navigation
-      console.log('Payment monitoring completed, browser closed');
+      // If order was already created by the monitor, skip final check
+      if (orderCreatedRef.current || processedPayments.has(paymentReference)) {
+        console.log('✅ Order already created by monitor, skipping final check');
+        return;
+      }
+      
+      // Final verification with retries — catches payments completed just before close
+      console.log('🔄 Running final payment verification (3 retries, 2s apart)...');
+      
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        try {
+          // Small delay to let Paystack finalize
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          
+          console.log(`🔍 Final verification attempt ${attempt}/3 for ${paymentReference}`);
+          const verification = await PaymentService.verifyPayment(paymentReference);
+          
+          if (verification.success && verification.status === 'success') {
+            console.log('🎉 Payment confirmed on final verification!');
+            await createOrderAfterPayment(paymentReference, verification.transaction_id);
+            return;
+          }
+          
+          console.log(`Payment status: ${verification.status} (attempt ${attempt})`);
+          
+        } catch (error) {
+          console.log(`Final check attempt ${attempt} error:`, error instanceof Error ? error.message : String(error));
+        }
+      }
+      
+      // After all retries, payment was not detected as successful
+      console.log('⚠️ Payment not confirmed after browser close and retries');
+      setIsProcessing(false);
+      
+      Alert.alert(
+        'Payment Status Unknown',
+        'We could not confirm your payment. If you completed the payment, your order will be processed shortly. You can check your order status in your profile.',
+        [
+          {
+            text: 'Check Again',
+            onPress: async () => {
+              setIsProcessing(true);
+              try {
+                const verification = await PaymentService.verifyPayment(paymentReference);
+                if (verification.success && verification.status === 'success') {
+                  await createOrderAfterPayment(paymentReference, verification.transaction_id);
+                } else {
+                  setIsProcessing(false);
+                  Alert.alert('Payment Pending', 'Payment has not been completed yet. Please try again.');
+                }
+              } catch (err) {
+                setIsProcessing(false);
+                Alert.alert('Error', 'Could not verify payment. Please try again later.');
+              }
+            },
+          },
+          {
+            text: 'Go Back',
+            style: 'cancel',
+            onPress: () => setIsProcessing(false),
+          },
+        ]
+      );
       
     } catch (error) {
       console.error('WebBrowser payment error:', error);
@@ -542,7 +618,7 @@ const CheckoutScreen: React.FC<CheckoutScreenProps> = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar backgroundColor={COLORS.background} barStyle="light-content" />
+      <StatusBar barStyle="light-content" />
       
       {/* Header */}
       <View style={styles.header}>

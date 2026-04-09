@@ -9,7 +9,7 @@ import { CartProvider, useCart } from './src/contexts/CartContext';
 import SimpleToast from './src/components/SimpleToast';
 import { ToastService } from './src/services/toastService';
 import { ProductSearchService } from './src/services/productSearchService';
-// import './src/utils/seedDatabase'; // Disabled - using real database
+import './src/utils/seedDatabase'; // Automatically seeds products in dev mode
 
 // Import screens
 import HomeScreen from './src/screens/HomeScreen';

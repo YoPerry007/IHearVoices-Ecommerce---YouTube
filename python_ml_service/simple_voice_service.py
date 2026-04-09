@@ -8,11 +8,57 @@ import os
 import json
 import tempfile
 import logging
+import subprocess
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import speech_recognition as sr
-from pydub import AudioSegment
-import io
+import imageio_ffmpeg
+
+# Get the bundled ffmpeg binary path (no ffprobe needed)
+FFMPEG_BIN = imageio_ffmpeg.get_ffmpeg_exe()
+logger_init = logging.getLogger(__name__)
+logger_init.info(f"🔧 Using ffmpeg binary: {FFMPEG_BIN}")
+
+
+def convert_audio_to_wav(input_path: str, output_path: str) -> bool:
+    """
+    Convert any audio format to 16 kHz mono PCM WAV using the ffmpeg binary
+    bundled with imageio-ffmpeg.  This avoids pydub (which also requires
+    ffprobe) and handles the fact that Android's default encoder produces
+    AMR / MPEG-4 audio despite the .wav extension Expo gives the file.
+    """
+    try:
+        cmd = [
+            FFMPEG_BIN,
+            "-y",               # overwrite output
+            "-i", input_path,   # input file
+            "-ar", "16000",     # 16 kHz sample rate
+            "-ac", "1",         # mono
+            "-sample_fmt", "s16",  # 16-bit signed PCM
+            "-f", "wav",        # output format
+            output_path,
+        ]
+        result = subprocess.run(
+            cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            timeout=15,
+        )
+        if result.returncode != 0:
+            stderr = result.stderr.decode("utf-8", errors="replace")
+            logger_init.error(f"❌ ffmpeg conversion failed: {stderr[-500:]}")
+            return False
+        logger_init.info("✅ Audio converted to 16 kHz mono PCM WAV via ffmpeg")
+        return True
+    except FileNotFoundError:
+        logger_init.error(f"❌ ffmpeg binary not found at: {FFMPEG_BIN}")
+        return False
+    except subprocess.TimeoutExpired:
+        logger_init.error("❌ ffmpeg conversion timed out")
+        return False
+    except Exception as e:
+        logger_init.error(f"❌ ffmpeg conversion error: {e}")
+        return False
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -205,7 +251,13 @@ def health_check():
     return jsonify({
         "status": "healthy",
         "service": "Ghana Voice Recognition",
-        "version": "1.0.0"
+        "version": "1.0.0",
+        "capabilities": {
+            "speech_recognition": True,
+            "ghana_accent_support": True,
+            "command_parsing": True,
+            "audio_preprocessing": True
+        }
     })
 
 @app.route('/process_audio', methods=['POST'])
@@ -232,73 +284,78 @@ def process_audio():
         
         logger.info(f"📁 Processing audio file: {audio_file.filename}")
         
-        # Create temporary file for audio processing
-        with tempfile.NamedTemporaryFile(delete=False, suffix='.wav') as temp_file:
-            # Read audio data
+        # Save the raw upload to a temp file (may be AMR/MPEG-4 despite .wav name)
+        raw_path = None
+        wav_path = None
+        try:
+            # Read raw audio bytes
             audio_data = audio_file.read()
             logger.info(f"📊 Audio data size: {len(audio_data)} bytes")
             
-            # Convert audio to WAV format using pydub
+            # Write raw upload to disk
+            with tempfile.NamedTemporaryFile(delete=False, suffix='.raw_upload') as raw_f:
+                raw_f.write(audio_data)
+                raw_path = raw_f.name
+            
+            # Prepare output WAV path
+            wav_fd, wav_path = tempfile.mkstemp(suffix='.wav')
+            os.close(wav_fd)
+            
+            # Convert to proper PCM WAV using ffmpeg
+            converted = convert_audio_to_wav(raw_path, wav_path)
+            
+            if not converted:
+                logger.warning("⚠️ ffmpeg conversion failed, trying raw file directly...")
+                # Last resort: maybe the file is already valid WAV
+                wav_path = raw_path
+                raw_path = None  # prevent double-delete
+        
+            # Initialize speech recognizer
+            recognizer = sr.Recognizer()
+            
+            # Process the converted WAV file
             try:
-                # Try to load audio with pydub
-                audio_segment = AudioSegment.from_file(io.BytesIO(audio_data))
-                
-                # Convert to WAV format
-                audio_segment = audio_segment.set_frame_rate(16000).set_channels(1)
-                audio_segment.export(temp_file.name, format="wav")
-                
-                logger.info("🔄 Audio converted to WAV format")
-                
-            except Exception as e:
-                logger.error(f"❌ Audio conversion failed: {e}")
-                # Fallback: write raw audio data
-                temp_file.write(audio_data)
-                temp_file.flush()
-        
-        # Initialize speech recognizer
-        recognizer = sr.Recognizer()
-        
-        # Process audio file
-        try:
-            with sr.AudioFile(temp_file.name) as source:
-                logger.info("🎧 Loading audio for recognition...")
-                audio = recognizer.record(source)
-                
-                # Try Google Speech Recognition first
-                try:
-                    logger.info("🔍 Attempting Google Speech Recognition...")
-                    text = recognizer.recognize_google(audio)
-                    logger.info(f"✅ Google recognition successful: '{text}'")
+                with sr.AudioFile(wav_path) as source:
+                    logger.info("🎧 Loading audio for recognition...")
+                    audio = recognizer.record(source)
                     
-                except sr.UnknownValueError:
-                    logger.warning("⚠️ Google could not understand audio")
-                    text = ""
-                except sr.RequestError as e:
-                    logger.warning(f"⚠️ Google recognition error: {e}")
-                    
-                    # Fallback to offline recognition
+                    # Try Google Speech Recognition first
                     try:
-                        logger.info("🔍 Attempting offline recognition...")
-                        text = recognizer.recognize_sphinx(audio)
-                        logger.info(f"✅ Offline recognition successful: '{text}'")
-                    except:
-                        logger.warning("⚠️ Offline recognition also failed")
+                        logger.info("🔍 Attempting Google Speech Recognition...")
+                        text = recognizer.recognize_google(audio)
+                        logger.info(f"✅ Google recognition successful: '{text}'")
+                        
+                    except sr.UnknownValueError:
+                        logger.warning("⚠️ Google could not understand audio")
                         text = ""
-        
-        except Exception as e:
-            logger.error(f"❌ Audio processing error: {e}")
-            text = ""
+                    except sr.RequestError as e:
+                        logger.warning(f"⚠️ Google recognition error: {e}")
+                        
+                        # Fallback to offline recognition
+                        try:
+                            logger.info("🔍 Attempting offline recognition...")
+                            text = recognizer.recognize_sphinx(audio)
+                            logger.info(f"✅ Offline recognition successful: '{text}'")
+                        except:
+                            logger.warning("⚠️ Offline recognition also failed")
+                            text = ""
+            
+            except Exception as e:
+                logger.error(f"❌ Audio processing error: {e}")
+                text = ""
         
         finally:
-            # Clean up temporary file
-            try:
-                os.unlink(temp_file.name)
-            except:
-                pass
+            # Clean up temporary files
+            for path in [raw_path, wav_path]:
+                if path:
+                    try:
+                        os.unlink(path)
+                    except:
+                        pass
         
         # Normalize Ghana accent
+        original_text = text or ""
         if text:
-            original_text = text
             text = normalize_ghana_accent(text)
             if text != original_text:
                 logger.info(f"🇬🇭 Ghana accent normalized: '{original_text}' → '{text}'")
@@ -326,6 +383,32 @@ def process_audio():
             "success": False,
             "error": str(e)
         }), 500
+
+@app.route('/test', methods=['GET'])
+def test_service():
+    """Test endpoint to verify command parsing works"""
+    test_phrases = [
+        "search for sneakers",
+        "add hoodie to cart",
+        "go to home",
+        "show me jeans",
+        "checkout",
+    ]
+    results = []
+    for phrase in test_phrases:
+        normalized = normalize_ghana_accent(phrase)
+        command = parse_voice_command(normalized)
+        results.append({
+            "input": phrase,
+            "normalized": normalized,
+            "command": command,
+        })
+    return jsonify({
+        "success": True,
+        "test_results": results,
+        "total_tests": len(test_phrases),
+        "passed": sum(1 for r in results if r["command"]["type"] != "unknown"),
+    })
 
 @app.route('/', methods=['GET'])
 def root():

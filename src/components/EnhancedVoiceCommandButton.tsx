@@ -13,6 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { COLORS, TYPOGRAPHY, SPACING, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 import { useHybridVoiceAssistant } from '../hooks/useHybridVoiceAssistant';
 import { VoiceCommand } from '../services/VoiceCommandParser';
+import { getMLServiceUrl } from '../config/mlServiceUrl';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -37,7 +38,7 @@ const EnhancedVoiceCommandButton: React.FC<EnhancedVoiceCommandButtonProps> = ({
   disabled = false,
   style,
   showConnectionStatus = true,
-  pythonMLUrl = 'http://localhost:5000',
+  pythonMLUrl = getMLServiceUrl(),
 }) => {
   const [showModal, setShowModal] = useState(false);
   const [showStatusModal, setShowStatusModal] = useState(false);

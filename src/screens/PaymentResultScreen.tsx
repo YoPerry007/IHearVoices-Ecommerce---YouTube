@@ -113,7 +113,7 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
   if (success) {
     return (
       <SafeAreaView style={styles.container}>
-        <StatusBar backgroundColor={COLORS.success} barStyle="light-content" />
+        <StatusBar barStyle="light-content" />
         
         <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
           
@@ -250,7 +250,7 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
   // Failure State
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar backgroundColor={COLORS.error} barStyle="light-content" />
+      <StatusBar barStyle="light-content" />
       
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         
