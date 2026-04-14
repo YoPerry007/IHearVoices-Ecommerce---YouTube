@@ -16,11 +16,11 @@ import {
   Text,
   StyleSheet,
   SafeAreaView,
-  StatusBar,
   TouchableOpacity,
   ScrollView,
   Linking,
 } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
@@ -113,7 +113,7 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
   if (success) {
     return (
       <SafeAreaView style={styles.container}>
-        <StatusBar barStyle="light-content" />
+      <StatusBar style="light" />
         
         <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
           

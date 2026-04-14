@@ -9,7 +9,9 @@ try {
     handleNotification: async () => ({
       shouldShowAlert: true,
       shouldPlaySound: true,
-      shouldSetBadge: true,
+      shouldSetBadge: false,
+      shouldShowBanner: true,
+      shouldShowList: true,
     }),
   });
 } catch (e) {
@@ -147,17 +149,9 @@ export class NotificationService {
           body,
           data,
           sound: true,
+          ...(channelId && Platform.OS === 'android' ? { channelId } : {}),
         },
         trigger: null, // Send immediately
-        ...(channelId && Platform.OS === 'android' && { 
-          content: { 
-            title, 
-            body, 
-            data, 
-            sound: true,
-            channelId 
-          } 
-        }),
       });
     } catch (error) {
       console.error('Error sending local notification:', error);

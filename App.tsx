@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Alert, ActivityIndicator } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import ExpoVoiceButton from './src/components/ExpoVoiceButton';
 import { VoiceCommand } from './src/services/VoiceCommandParser';
@@ -118,7 +119,7 @@ const AdminApp: React.FC<AdminAppProps> = ({ currentAdminScreen, setCurrentAdmin
 
   const renderAdminTabBar = () => {
     return (
-      <View style={styles.tabBar}>
+      <>
         <TouchableOpacity
           style={[styles.tabItem, currentAdminScreen === 'dashboard' && styles.tabItemActive]}
           onPress={() => setCurrentAdminScreen('dashboard')}
@@ -188,17 +189,21 @@ const AdminApp: React.FC<AdminAppProps> = ({ currentAdminScreen, setCurrentAdmin
             Analytics
           </Text>
         </TouchableOpacity>
-      </View>
+      </>
     );
   };
 
+  const insets = useSafeAreaInsets();
+
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar style="light" backgroundColor={COLORS.background} />
+      <StatusBar style="light" />
       <View style={styles.content}>
         {renderAdminScreen()}
       </View>
-      {renderAdminTabBar()}
+      <View style={[styles.tabBar, { paddingBottom: Math.max(insets.bottom, 8) }]}>
+        {renderAdminTabBar()}
+      </View>
     </SafeAreaView>
   );
 };
@@ -225,11 +230,13 @@ const AuthenticatedApp: React.FC = () => {
     error?: string;
   } | null>(null);
 
+  const insets = useSafeAreaInsets();
+
   // Show loading screen while checking authentication
   if (loading) {
     return (
       <SafeAreaView style={styles.container}>
-        <StatusBar style="light" backgroundColor={COLORS.background} />
+        <StatusBar style="light" />
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={COLORS.primary} />
           <Text style={styles.loadingText}>Loading...</Text>
@@ -280,7 +287,7 @@ const AuthenticatedApp: React.FC = () => {
 
     return (
       <SafeAreaView style={styles.container}>
-        <StatusBar style="light" backgroundColor={COLORS.background} />
+        <StatusBar style="light" />
         {renderAuthScreen()}
       </SafeAreaView>
     );
@@ -610,7 +617,7 @@ const AuthenticatedApp: React.FC = () => {
     }
 
     return (
-      <View style={styles.tabBar}>
+      <View style={[styles.tabBar, { paddingBottom: Math.max(insets.bottom, 8) }]}>
         <TouchableOpacity
           style={[styles.tabItem, currentScreen === 'home' && styles.tabItemActive]}
           onPress={() => {
@@ -715,7 +722,7 @@ const AuthenticatedApp: React.FC = () => {
   // Render authenticated app
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar style="light" backgroundColor={COLORS.background} />
+      <StatusBar style="light" />
       {renderSecurityBanner()}
       <View style={styles.content}>
         {renderScreen()}
@@ -735,18 +742,23 @@ export default function App() {
   }, []);
 
   return (
-    <AuthProvider>
-      <CartProvider>
-        <AuthenticatedApp />
-        <SimpleToast ref={toastRef} />
-      </CartProvider>
-    </AuthProvider>
+    <SafeAreaProvider>
+      <AuthProvider>
+        <CartProvider>
+          <AuthenticatedApp />
+          <SimpleToast ref={toastRef} />
+        </CartProvider>
+      </AuthProvider>
+    </SafeAreaProvider>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: COLORS.background,
+  },
+  statusBarBg: {
     backgroundColor: COLORS.background,
   },
   content: {
@@ -768,9 +780,8 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.surface,
     borderTopWidth: 1,
     borderTopColor: COLORS.surfaceLight,
-    paddingBottom: 8,
     paddingTop: 8,
-    height: 80,
+    // paddingBottom is set dynamically via safe area insets
   },
   tabItem: {
     flex: 1,
