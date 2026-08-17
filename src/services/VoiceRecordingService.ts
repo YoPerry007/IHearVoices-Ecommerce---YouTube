@@ -50,10 +50,8 @@ export class VoiceRecordingService {
       // Set audio mode for recording
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: true,
-        interruptionModeIOS: Audio.InterruptionModeIOS.DoNotMix,
         playsInSilentModeIOS: true,
         shouldDuckAndroid: true,
-        interruptionModeAndroid: Audio.InterruptionModeAndroid.DoNotMix,
         playThroughEarpieceAndroid: false,
         staysActiveInBackground: false,
       });
@@ -84,7 +82,7 @@ export class VoiceRecordingService {
           ...Audio.RecordingOptionsPresets.HIGH_QUALITY,
           android: {
             extension: '.m4a',
-            outputFormat: options?.format as Audio.AndroidOutputFormat || Audio.AndroidOutputFormat.MPEG4,
+            outputFormat: options?.format as Audio.AndroidOutputFormat || Audio.AndroidOutputFormat.MPEG_4,
             audioEncoder: options?.quality as Audio.AndroidAudioEncoder || Audio.AndroidAudioEncoder.AAC,
             sampleRate: options?.sampleRate || this.DEFAULT_OPTIONS.sampleRate!,
             numberOfChannels: options?.channels || this.DEFAULT_OPTIONS.channels!,

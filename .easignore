@@ -1,0 +1,15 @@
+node_modules/
+.expo/
+.git/
+python_ml_service/venv/
+python_ml_service/__pycache__/
+python_ml_service/*.pyc
+*.log
+*.tsbuildinfo
+dist/
+dist-apk-check/
+web-build/
+build/
+builds/
+tmp/
+temp/

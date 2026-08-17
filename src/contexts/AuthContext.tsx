@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { Platform } from 'react-native';
 import { Session, User, AuthError } from '@supabase/supabase-js';
 import { supabase } from '../config/supabase';
 
@@ -53,9 +54,34 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const e2eWebAuthEnabled = Platform.OS === 'web' && process.env.EXPO_PUBLIC_E2E_AUTH === '1';
 
   // Initialize auth state
   useEffect(() => {
+    if (e2eWebAuthEnabled) {
+      const now = new Date().toISOString();
+      const testUser = {
+        id: '00000000-0000-4000-8000-000000000001',
+        email: 'codex-voice-test@example.com',
+      } as User;
+
+      setSession({ user: testUser } as Session);
+      setUser(testUser);
+      setProfile({
+        id: testUser.id,
+        email: testUser.email || 'codex-voice-test@example.com',
+        full_name: 'Codex Voice Test',
+        phone: null,
+        address: null,
+        avatar_url: null,
+        role: 'user',
+        created_at: now,
+        updated_at: now,
+      });
+      setLoading(false);
+      return;
+    }
+
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
@@ -85,7 +111,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [e2eWebAuthEnabled]);
 
   // Fetch user profile
   const fetchProfile = async (userId: string) => {

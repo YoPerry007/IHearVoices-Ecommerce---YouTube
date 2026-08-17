@@ -129,12 +129,12 @@ const PrivacyPolicyScreen: React.FC<PrivacyPolicyScreenProps> = ({
           <View style={styles.introSection}>
             <Text style={styles.introTitle}>Your Privacy Matters</Text>
             <Text style={styles.introText}>
-              At IHearVoices, we respect your privacy and are committed to protecting your personal information. 
+              At IHearVoices, we respect your privacy and are committed to protecting your personal information.
               This Privacy Policy explains how we collect, use, and safeguard your data when you use our app.
             </Text>
             <View style={styles.lastUpdated}>
               <Ionicons name="calendar-outline" size={16} color={COLORS.textSecondary} />
-              <Text style={styles.lastUpdatedText}>Last Updated: October 29, 2024</Text>
+              <Text style={styles.lastUpdatedText}>Last Updated: April 29, 2026</Text>
             </View>
           </View>
 

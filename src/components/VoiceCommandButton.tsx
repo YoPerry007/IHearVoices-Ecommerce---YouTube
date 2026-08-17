@@ -13,6 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { COLORS, TYPOGRAPHY, SPACING, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 import ExpoVoiceService, { ExpoVoiceResult } from '../services/ExpoVoiceService';
 import { VoiceCommand } from '../services/VoiceCommandParser';
+import { useFreeVoiceAssistant } from '../hooks/useFreeVoiceAssistant';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 

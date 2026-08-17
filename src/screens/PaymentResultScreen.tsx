@@ -72,9 +72,9 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
     const body = encodeURIComponent(
       `Order Reference: ${reference}\nTransaction ID: ${transactionId}\nAmount: GH₵${amount.toFixed(2)}\nPayment Method: ${paymentMethod}\n\nPlease describe your issue below:`
     );
-    
+
     const emailUrl = `mailto:${supportEmail}?subject=${subject}&body=${body}`;
-    
+
     try {
       await Linking.openURL(emailUrl);
     } catch (err) {
@@ -113,10 +113,10 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
   if (success) {
     return (
       <SafeAreaView style={styles.container}>
-      <StatusBar style="light" />
-        
+        <StatusBar style="light" />
+
         <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-          
+
           {/* Success Header */}
           <LinearGradient
             colors={[COLORS.success, COLORS.success]}
@@ -145,34 +145,34 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
           {/* Payment Details */}
           <View style={styles.detailsCard}>
             <Text style={styles.detailsTitle}>Payment Details</Text>
-            
+
             <View style={styles.detailRow}>
               <Text style={styles.detailLabel}>Amount Paid</Text>
               <Text style={styles.detailValue}>GH₵{amount.toFixed(2)}</Text>
             </View>
-            
+
             <View style={styles.detailRow}>
               <Text style={styles.detailLabel}>Payment Method</Text>
               <Text style={styles.detailValue}>{paymentMethod}</Text>
             </View>
-            
+
             <View style={styles.detailRow}>
               <Text style={styles.detailLabel}>Transaction ID</Text>
               <Text style={[styles.detailValue, styles.monospace]}>{transactionId}</Text>
             </View>
-            
+
             <View style={styles.detailRow}>
               <Text style={styles.detailLabel}>Reference</Text>
               <Text style={[styles.detailValue, styles.monospace]}>{reference}</Text>
             </View>
-            
+
             {orderId && (
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Order ID</Text>
                 <Text style={[styles.detailValue, styles.monospace]}>{orderId}</Text>
               </View>
             )}
-            
+
             <View style={styles.detailRow}>
               <Text style={styles.detailLabel}>Date & Time</Text>
               <Text style={styles.detailValue}>{new Date().toLocaleString()}</Text>
@@ -182,7 +182,7 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
           {/* Next Steps */}
           <View style={styles.nextStepsCard}>
             <Text style={styles.nextStepsTitle}>What's Next?</Text>
-            
+
             <View style={styles.stepItem}>
               <View style={styles.stepIcon}>
                 <Ionicons name="mail" size={20} color={COLORS.primary} />
@@ -191,7 +191,7 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
                 You'll receive an email confirmation shortly
               </Text>
             </View>
-            
+
             {orderId && (
               <View style={styles.stepItem}>
                 <View style={styles.stepIcon}>
@@ -202,7 +202,7 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
                 </Text>
               </View>
             )}
-            
+
             <View style={styles.stepItem}>
               <View style={styles.stepIcon}>
                 <Ionicons name="notifications" size={20} color={COLORS.primary} />
@@ -232,7 +232,7 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
             <Ionicons name="receipt" size={20} color={COLORS.primary} />
             <Text style={styles.secondaryButtonText}>View Orders</Text>
           </TouchableOpacity>
-          
+
           <LinearGradient
             colors={[COLORS.primary, COLORS.primaryDark]}
             style={styles.primaryButton}
@@ -250,10 +250,10 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
   // Failure State
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" />
-      
+      {/* <StatusBar barStyle="light-content" /> */}
+
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        
+
         {/* Error Header */}
         <LinearGradient
           colors={[COLORS.error, COLORS.error]}
@@ -271,27 +271,27 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
         {/* Error Details */}
         <View style={styles.detailsCard}>
           <Text style={styles.detailsTitle}>Transaction Details</Text>
-          
+
           <View style={styles.detailRow}>
             <Text style={styles.detailLabel}>Attempted Amount</Text>
             <Text style={styles.detailValue}>GH₵{amount.toFixed(2)}</Text>
           </View>
-          
+
           <View style={styles.detailRow}>
             <Text style={styles.detailLabel}>Payment Method</Text>
             <Text style={styles.detailValue}>{paymentMethod}</Text>
           </View>
-          
+
           <View style={styles.detailRow}>
             <Text style={styles.detailLabel}>Reference</Text>
             <Text style={[styles.detailValue, styles.monospace]}>{reference}</Text>
           </View>
-          
+
           <View style={styles.detailRow}>
             <Text style={styles.detailLabel}>Time</Text>
             <Text style={styles.detailValue}>{new Date().toLocaleString()}</Text>
           </View>
-          
+
           {error && (
             <View style={styles.errorMessageContainer}>
               <Text style={styles.errorMessageLabel}>Error Details:</Text>
@@ -303,21 +303,21 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
         {/* Troubleshooting */}
         <View style={styles.troubleshootingCard}>
           <Text style={styles.troubleshootingTitle}>Common Solutions</Text>
-          
+
           <View style={styles.troubleshootingItem}>
             <Ionicons name="card" size={20} color={COLORS.textSecondary} />
             <Text style={styles.troubleshootingText}>
               Check your card balance or try a different payment method
             </Text>
           </View>
-          
+
           <View style={styles.troubleshootingItem}>
             <Ionicons name="wifi" size={20} color={COLORS.textSecondary} />
             <Text style={styles.troubleshootingText}>
               Ensure you have a stable internet connection
             </Text>
           </View>
-          
+
           <View style={styles.troubleshootingItem}>
             <Ionicons name="phone-portrait" size={20} color={COLORS.textSecondary} />
             <Text style={styles.troubleshootingText}>
@@ -343,13 +343,13 @@ const PaymentResultScreen: React.FC<PaymentResultScreenProps> = ({
           <Ionicons name="arrow-back" size={20} color={COLORS.primary} />
           <Text style={styles.secondaryButtonText}>Back to Cart</Text>
         </TouchableOpacity>
-        
+
         <LinearGradient
           colors={[COLORS.primary, COLORS.primaryDark]}
           style={styles.primaryButton}
         >
-          <TouchableOpacity 
-            style={styles.primaryButtonContent} 
+          <TouchableOpacity
+            style={styles.primaryButtonContent}
             onPress={() => navigation.goBack()}
           >
             <Ionicons name="refresh" size={20} color={COLORS.white} />

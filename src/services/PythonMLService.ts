@@ -1,5 +1,5 @@
 import * as FileSystem from 'expo-file-system';
-import { getMLServiceUrl } from '../config/mlServiceUrl';
+import { getMLServiceUrl, resolveMLServiceUrl } from '../config/mlServiceUrl';
 
 export interface PythonMLResult {
   success: boolean;
@@ -8,17 +8,22 @@ export interface PythonMLResult {
   confidence?: number;
   engine?: string;
   command?: {
-    success: boolean;
-    intent: string;
+    success?: boolean;
+    intent?: string;
+    type?: string;
     action?: string;
     query?: string;
+    screen?: string;
     category?: string;
+    product_query?: string;
     confidence: number;
     command?: {
       type: string;
       action?: string;
       query?: string;
+      screen?: string;
       category?: string;
+      product_query?: string;
     };
   };
   processingTime?: string;
@@ -43,7 +48,8 @@ export interface PythonMLServiceStatus {
 
 export class PythonMLService {
   private static baseUrl = getMLServiceUrl();
-  private static timeout = 10000; // 10 seconds timeout
+  private static healthTimeout = 10000;
+  private static processingTimeout = 60000;
   private static lastHealthCheck: PythonMLServiceStatus | null = null;
   private static healthCheckInterval: NodeJS.Timeout | null = null;
 
@@ -63,9 +69,10 @@ export class PythonMLService {
     
     try {
       console.log('🏥 Checking Python ML service health...');
+      this.baseUrl = await resolveMLServiceUrl();
       
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), this.timeout);
+      const timeoutId = setTimeout(() => controller.abort(), this.healthTimeout);
 
       const response = await fetch(`${this.baseUrl}/health`, {
         method: 'GET',
@@ -184,7 +191,7 @@ export class PythonMLService {
       console.log(`📤 Uploading audio file: ${audioUri}`);
 
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), this.timeout);
+      const timeoutId = setTimeout(() => controller.abort(), this.processingTimeout);
 
       const response = await fetch(`${this.baseUrl}/process_audio`, {
         method: 'POST',
@@ -202,9 +209,18 @@ export class PythonMLService {
         throw new Error(result.error || `HTTP ${response.status}`);
       }
 
-      // Map backend 'type' to frontend 'intent' if needed
-      if (result.command && !result.command.intent && result.command.type) {
-        result.command.intent = result.command.type;
+      // The Flask service returns command directly as { type, query, ... }.
+      // Older app code expected a nested { intent, command } shape.
+      if (result.command?.type) {
+        result.command.intent = result.command.intent || result.command.type;
+        result.command.command = result.command.command || {
+          type: result.command.type,
+          action: result.command.action,
+          query: result.command.query,
+          screen: result.command.screen,
+          category: result.command.category,
+          product_query: result.command.product_query,
+        };
       }
 
       console.log('✅ Python ML recognition successful:', {
@@ -240,7 +256,7 @@ export class PythonMLService {
       console.log('🧪 Testing Python ML service...');
 
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), this.timeout);
+      const timeoutId = setTimeout(() => controller.abort(), this.healthTimeout);
 
       const response = await fetch(`${this.baseUrl}/test`, {
         method: 'GET',

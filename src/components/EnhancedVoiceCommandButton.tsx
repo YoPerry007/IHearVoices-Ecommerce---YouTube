@@ -608,7 +608,7 @@ const styles = StyleSheet.create({
     borderRadius: 28,
     justifyContent: 'center',
     alignItems: 'center',
-    ...SHADOWS.large,
+    ...SHADOWS.lg,
   },
   floatingButtonInner: {
     width: '100%',
@@ -621,7 +621,7 @@ const styles = StyleSheet.create({
     borderRadius: 28,
     justifyContent: 'center',
     alignItems: 'center',
-    ...SHADOWS.medium,
+    ...SHADOWS.md,
   },
   inlineStatusIndicator: {
     position: 'absolute',

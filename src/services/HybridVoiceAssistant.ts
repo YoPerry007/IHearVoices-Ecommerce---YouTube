@@ -301,6 +301,7 @@ export class HybridVoiceAssistant {
           command: result.command,
           originalText: result.transcript || '',
           normalizedText: result.transcript || '',
+          entities: [],
         };
 
         this.updateState({
@@ -380,13 +381,22 @@ export class HybridVoiceAssistant {
         throw new Error(result.error || 'Python ML recognition failed');
       }
 
+      const command = this.mapPythonResultToVoiceCommand(result);
+      if (!command) {
+        throw new Error(
+          result.transcript
+            ? `Could not turn "${result.transcript}" into a shopping command`
+            : 'No speech was recognized from the recording'
+        );
+      }
+
       return {
         success: true,
         transcript: result.transcript,
-        confidence: result.confidence,
+        confidence: result.command?.confidence || result.confidence,
         service: 'Python ML Service',
         engine: result.engine,
-        command: result.command?.command,
+        command,
       };
 
     } catch (error) {
@@ -396,6 +406,53 @@ export class HybridVoiceAssistant {
         error: (error as Error).message,
         service: 'Python ML Service (Failed)',
       };
+    }
+  }
+
+  private mapPythonResultToVoiceCommand(result: PythonMLResult): VoiceCommand | null {
+    const backendCommand = result.command?.command || result.command;
+    if (!backendCommand || backendCommand.type === 'unknown') {
+      const query = result.transcript?.trim();
+      return query ? { type: 'search', query } : null;
+    }
+
+    switch (backendCommand.type) {
+      case 'search':
+        return {
+          type: 'search',
+          query: backendCommand.query,
+        };
+      case 'navigate':
+        return {
+          type: 'navigate',
+          screen: backendCommand.screen,
+        };
+      case 'add_to_cart':
+        return {
+          type: 'add_to_cart',
+          action: 'add',
+          product_query: backendCommand.product_query,
+          parameters: {
+            product_query: backendCommand.product_query,
+            query: backendCommand.product_query,
+          },
+        };
+      case 'clear_cart':
+        return {
+          type: 'cart',
+          action: 'clear',
+        };
+      case 'checkout':
+        return {
+          type: 'checkout',
+        };
+      case 'category':
+        return {
+          type: 'category',
+          category: backendCommand.category,
+        };
+      default:
+        return null;
     }
   }
 
@@ -449,21 +506,25 @@ export class HybridVoiceAssistant {
       const recordingOptions = {
         android: {
           extension: '.wav',
-          outputFormat: Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_DEFAULT,
-          audioEncoder: Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_DEFAULT,
+          outputFormat: Audio.AndroidOutputFormat.DEFAULT,
+          audioEncoder: Audio.AndroidAudioEncoder.DEFAULT,
           sampleRate: 16000,
           numberOfChannels: 1,
           bitRate: 128000,
         },
         ios: {
           extension: '.wav',
-          audioQuality: Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_HIGH,
+          audioQuality: Audio.IOSAudioQuality.HIGH,
           sampleRate: 16000,
           numberOfChannels: 1,
           bitRate: 128000,
           linearPCMBitDepth: 16,
           linearPCMIsBigEndian: false,
           linearPCMIsFloat: false,
+        },
+        web: {
+          mimeType: 'audio/wav',
+          bitsPerSecond: 128000,
         },
       };
 

@@ -172,7 +172,7 @@ const TermsOfServiceScreen: React.FC<TermsOfServiceScreenProps> = ({
             </Text>
             <View style={styles.lastUpdated}>
               <Ionicons name="calendar-outline" size={16} color={COLORS.textSecondary} />
-              <Text style={styles.lastUpdatedText}>Last Updated: October 29, 2024</Text>
+              <Text style={styles.lastUpdatedText}>Last Updated: April 29, 2026</Text>
             </View>
           </View>
 

@@ -1,13 +1,14 @@
 import { Audio } from 'expo-av';
 import * as FileSystem from 'expo-file-system';
 import * as Haptics from 'expo-haptics';
-import { getMLServiceUrl } from '../config/mlServiceUrl';
-import VoiceCommandParser, { ParsedCommand } from './VoiceCommandParser';
+import { Platform } from 'react-native';
+import { resolveMLServiceUrl } from '../config/mlServiceUrl';
+import { VoiceCommand } from './VoiceCommandParser';
 
 export interface ExpoVoiceResult {
   success: boolean;
   transcript?: string;
-  command?: ParsedCommand;
+  command?: VoiceCommand;
   confidence?: number;
   error?: string;
   audioUri?: string;
@@ -20,6 +21,9 @@ export interface ExpoVoiceOptions {
   enableHaptics?: boolean;
   minConfidence?: number;
 }
+
+const HEALTH_CHECK_TIMEOUT_MS = 10000;
+const AUDIO_PROCESSING_TIMEOUT_MS = 60000;
 
 export class ExpoVoiceService {
   private static recording: Audio.Recording | null = null;
@@ -93,15 +97,15 @@ export class ExpoVoiceService {
       const recordingOptions = {
         android: {
           extension: '.wav',
-          outputFormat: Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_DEFAULT,
-          audioEncoder: Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_DEFAULT,
+          outputFormat: Audio.AndroidOutputFormat.DEFAULT,
+          audioEncoder: Audio.AndroidAudioEncoder.DEFAULT,
           sampleRate: 16000,
           numberOfChannels: 1,
           bitRate: 128000,
         },
         ios: {
           extension: '.wav',
-          audioQuality: Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_HIGH,
+          audioQuality: Audio.IOSAudioQuality.HIGH,
           sampleRate: 16000,
           numberOfChannels: 1,
           bitRate: 128000,
@@ -110,7 +114,7 @@ export class ExpoVoiceService {
           linearPCMIsFloat: false,
         },
         web: {
-          mimeType: 'audio/wav',
+          mimeType: 'audio/webm',
           bitsPerSecond: 128000,
         },
       };
@@ -246,9 +250,9 @@ export class ExpoVoiceService {
 
       // Check if Python ML service is available
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      const timeoutId = setTimeout(() => controller.abort(), HEALTH_CHECK_TIMEOUT_MS);
       
-      const baseUrl = getMLServiceUrl();
+      const baseUrl = await resolveMLServiceUrl();
       console.log(`🔗 Using Python ML Service URL: ${baseUrl}`);
       
       const healthResponse = await fetch(`${baseUrl}/health`, {
@@ -269,17 +273,26 @@ export class ExpoVoiceService {
       const formData = new FormData();
       
       // Add audio file
-      formData.append('audio', {
-        uri: audioUri,
-        type: 'audio/wav',
-        name: 'recording.wav',
-      } as any);
+      const isWeb = Platform.OS === 'web';
+      if (isWeb) {
+        const audioBlob = await fetch(audioUri).then(response => response.blob());
+        formData.append(
+          'audio',
+          new File([audioBlob], 'recording.webm', { type: audioBlob.type || 'audio/webm' })
+        );
+      } else {
+        formData.append('audio', {
+          uri: audioUri,
+          type: 'audio/wav',
+          name: 'recording.wav',
+        } as any);
+      }
 
-      formData.append('format', 'wav');
+      formData.append('format', isWeb ? 'webm' : 'wav');
 
       // Send to Python ML service
       const controller2 = new AbortController();
-      const timeoutId2 = setTimeout(() => controller2.abort(), 15000);
+      const timeoutId2 = setTimeout(() => controller2.abort(), AUDIO_PROCESSING_TIMEOUT_MS);
       
       const response = await fetch(`${baseUrl}/process_audio`, {
         method: 'POST',
@@ -304,9 +317,16 @@ export class ExpoVoiceService {
       console.log('✅ Python ML processing successful');
 
       // Map Python service response to VoiceCommand format
-      let mappedCommand: any = null;
-      if (result.command && result.command.type !== 'unknown') {
-        mappedCommand = this.mapPythonCommandToVoiceCommand(result.command);
+      const mappedCommand =
+        this.mapPythonCommandToVoiceCommand(result.command) ||
+        this.mapTranscriptToSearchCommand(result.transcript);
+
+      if (!mappedCommand) {
+        throw new Error(
+          result.transcript
+            ? `Could not turn "${result.transcript}" into a shopping command`
+            : 'No speech was recognized from the recording'
+        );
       }
 
       // Log to database for debugging (as requested by user)
@@ -330,14 +350,18 @@ export class ExpoVoiceService {
   /**
    * Map Python service command to VoiceCommand format
    */
-  private static mapPythonCommandToVoiceCommand(pythonCommand: any): any {
+  private static mapPythonCommandToVoiceCommand(pythonCommand: any): any | null {
+    if (!pythonCommand || pythonCommand.type === 'unknown') {
+      return null;
+    }
+
     const { type, query, screen, confidence } = pythonCommand;
 
     switch (type) {
       case 'search':
         return {
           type: 'search',
-          query: query,
+          query: this.normalizeSearchQuery(query),
           confidence: confidence || 0.8
         };
       
@@ -380,11 +404,45 @@ export class ExpoVoiceService {
         };
       
       default:
-        return {
-          type: 'help',
-          confidence: 0.3
-        };
+        return null;
     }
+  }
+
+  private static mapTranscriptToSearchCommand(transcript?: string): any | null {
+    const query = this.normalizeSearchQuery(transcript);
+    if (!query) {
+      return null;
+    }
+
+    return {
+      type: 'search',
+      query,
+      confidence: 0.45,
+    };
+  }
+
+  private static normalizeSearchQuery(value?: string): string {
+    const cleaned = value
+      ?.replace(/\b(search|show|find|look)\s+(for|me)?\b/gi, ' ')
+      .replace(/\b(search|show|find|look)\b/gi, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    if (!cleaned) {
+      return '';
+    }
+
+    const words = cleaned.split(' ');
+    if (words.length % 2 === 0) {
+      const midpoint = words.length / 2;
+      const firstHalf = words.slice(0, midpoint).join(' ').toLowerCase();
+      const secondHalf = words.slice(midpoint).join(' ').toLowerCase();
+      if (firstHalf === secondHalf) {
+        return words.slice(0, midpoint).join(' ');
+      }
+    }
+
+    return cleaned;
   }
 
   /**
@@ -392,6 +450,11 @@ export class ExpoVoiceService {
    */
   private static async cleanupAudioFile(audioUri: string): Promise<void> {
     try {
+      if (Platform.OS === 'web') {
+        URL.revokeObjectURL(audioUri);
+        return;
+      }
+
       const fileInfo = await FileSystem.getInfoAsync(audioUri);
       if (fileInfo.exists) {
         await FileSystem.deleteAsync(audioUri);
