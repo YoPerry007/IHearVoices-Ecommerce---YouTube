@@ -13,6 +13,7 @@
       "backgroundColor": "#0F172A"
     },
     "ios": {
+      "bundleIdentifier": "com.cornielventures.ihearvoices",
       "supportsTablet": true,
       "infoPlist": {
         "NSMicrophoneUsageDescription": "This app uses the microphone for voice commands to help you shop hands-free.",

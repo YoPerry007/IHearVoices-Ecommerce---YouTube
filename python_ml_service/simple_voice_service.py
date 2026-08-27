@@ -9,10 +9,18 @@ import json
 import tempfile
 import logging
 import subprocess
+import sys
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import speech_recognition as sr
 import imageio_ffmpeg
+
+# Windows terminals commonly default to cp1252, which cannot encode the
+# service's Unicode status messages. Configure replacement-safe UTF-8 streams
+# so the backend starts reliably from the bundled .bat launcher.
+for stream in (sys.stdout, sys.stderr):
+    if hasattr(stream, "reconfigure"):
+        stream.reconfigure(encoding="utf-8", errors="replace")
 
 # Get the bundled ffmpeg binary path (no ffprobe needed)
 FFMPEG_BIN = imageio_ffmpeg.get_ffmpeg_exe()
@@ -440,6 +448,6 @@ if __name__ == '__main__':
     app.run(
         host='0.0.0.0',
         port=5000,
-        debug=True,
+        debug=os.getenv('ML_SERVICE_DEBUG') == '1',
         threaded=True
     )

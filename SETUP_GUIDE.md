@@ -8,6 +8,7 @@ Complete setup instructions for the Ghana Voice-Activated Ecommerce App.
 - **Python 3.8+**
 - **Expo CLI**: `npm install -g @expo/cli`
 - **Supabase account**: [supabase.com](https://supabase.com)
+- **Groq account**: [console.groq.com](https://console.groq.com)
 - **Paystack account**: [paystack.com](https://paystack.com)
 
 ## 🔧 Environment Configuration
@@ -20,8 +21,7 @@ EXPO_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 EXPO_PUBLIC_SUPABASE_ANON_KEY=your_anon_key_here
 
 # Paystack Configuration (Test Keys)
-EXPO_PUBLIC_PAYSTACK_PUBLIC_KEY=pk_test_your_test_public_key
-PAYSTACK_SECRET_KEY=sk_test_your_test_secret_key
+EXPO_PUBLIC_PAYSTACK_TEST_MODE=true
 ```
 
 ## 🗄️ Database Setup
@@ -43,6 +43,45 @@ PAYSTACK_SECRET_KEY=sk_test_your_test_secret_key
 2. Copy **Project URL** and **anon public** key
 3. Add to your `.env` file
 
+## ✨ Groq AI Shopping Assistant Setup
+
+The shopping assistant runs in an authenticated Supabase Edge Function so the
+Groq API key is never bundled into the mobile or web app.
+
+### 1. Create a Groq API Key
+
+1. Open the Groq Console and create an API key.
+2. Do not add this key to the app's root `.env` file and never prefix it with
+   `EXPO_PUBLIC_`.
+
+### 2. Configure and Deploy the Edge Function
+
+```bash
+npx supabase login
+npx supabase link --project-ref ateiysixigcfpuopjhlb
+npx supabase secrets set GROQ_API_KEY=gsk_your_key
+npx supabase functions deploy shopping-assistant
+```
+
+The default model is `openai/gpt-oss-20b`, which supports the strict structured
+response used by the app. To configure another compatible model:
+
+```bash
+npx supabase secrets set GROQ_MODEL=openai/gpt-oss-20b
+```
+
+### 3. Verify
+
+1. Sign in to the app with a normal buyer account.
+2. Open the **Assistant** tab.
+3. Try “Find sneakers under GH₵500” and “Track my latest order.”
+4. Confirm product cards open existing products and order cards only show the
+   signed-in buyer's orders.
+
+For local function development, copy
+`supabase/functions/shopping-assistant/.env.example` to a git-ignored local env
+file, add your key, and serve the function with the Supabase CLI.
+
 ## 🎤 Python ML Service Setup
 
 ### 1. Install Dependencies
@@ -57,6 +96,11 @@ python simple_voice_service.py
 ```
 
 Service will run on `http://localhost:5000`
+
+The service listens on `0.0.0.0`, and a standalone Android build automatically
+looks for it on the phone's current Wi-Fi network. Keep the phone and computer
+on the same Wi-Fi and allow inbound TCP port 5000 through Windows Firewall. You
+do not need to rebuild the APK when the computer's local IP address changes.
 
 ### 3. Test Service
 Open browser to `http://localhost:5000/health` - should return:
@@ -78,7 +122,15 @@ Open browser to `http://localhost:5000/health` - should return:
 ### 2. Get Test Keys
 - **Test Public Key**: Starts with `pk_test_`
 - **Test Secret Key**: Starts with `sk_test_`
-- Add both to `.env` file
+- Keep the secret server-side. Configure it and deploy the authenticated payment
+  function:
+
+```bash
+npx supabase secrets set PAYSTACK_SECRET_KEY=sk_test_your_test_secret_key
+npx supabase functions deploy payment-gateway
+```
+
+Never put a Paystack secret in an `EXPO_PUBLIC_*` variable or mobile source file.
 
 ### 3. Test Cards
 Use these for testing payments:
@@ -103,6 +155,18 @@ npx expo start
 - **iOS**: Scan QR code with Camera app
 - **Android**: Scan QR code with Expo Go app
 - **Simulator**: Press `i` for iOS or `a` for Android
+
+### 4. Build an Installable Android APK
+
+```bash
+npm run build:android:apk
+```
+
+The `preview` profile creates an APK that can be downloaded and installed
+directly. Once installed, the app does not need the Expo development server.
+Only start `python_ml_service/start_simple_service.bat` when you want the local
+voice backend; Supabase, the shopping assistant, and payment functions are
+hosted remotely.
 
 ## 👨‍💼 Admin Access Setup
 
@@ -148,9 +212,12 @@ npx expo start
 
 ### Mobile App
 ```bash
-# Build for production
-npx expo build:android
-npx expo build:ios
+# Installable Android preview APK
+npm run build:android:apk
+
+# Store builds
+npx eas build --platform android --profile production
+npx eas build --platform ios --profile production
 
 # Submit to stores
 npx expo submit:android
@@ -163,7 +230,7 @@ Deploy Python service to cloud provider:
 - **Railway**: Direct GitHub deployment
 - **DigitalOcean**: App Platform deployment
 
-Update service URL in `src/services/ExpoVoiceService.ts`
+Set `EXPO_PUBLIC_ML_SERVICE_URL` to the deployed HTTPS service URL when building.
 
 ### Database
 - Supabase handles production scaling automatically

@@ -1,3 +1,5 @@
+import { supabase } from '../config/supabase';
+
 /**
  * PaymentService - Industry-standard payment processing service
  * Handles all payment operations with Paystack for Ghana market
@@ -70,28 +72,13 @@ export interface PaymentVerificationResponse {
 }
 
 class PaymentService {
-  // Paystack Configuration - FORCE TEST KEYS ONLY
-  private static readonly PUBLIC_KEY = 'pk_test_47365b50300d1d3c5d6dd9932b7cecdaa4927b3a';
-  private static readonly SECRET_KEY = 'sk_test_b16c9e25c09402455df06d2ed58e7183ca66de91';
-  private static readonly BASE_URL = 'https://api.paystack.co';
-  
-  // Test mode detection - always true since we force test keys
+  // The Paystack secret stays in the authenticated Supabase Edge Function.
   private static get isTestMode(): boolean {
-    return true;
+    return process.env.EXPO_PUBLIC_PAYSTACK_TEST_MODE !== 'false';
   }
 
-  // Debug method to check environment variables (call manually)
   private static debugEnvironment() {
-    console.log('🔑 PaymentService Environment Check:');
-    console.log('🧪 TEST MODE:', '✅ FORCED ENABLED (hardcoded test keys)');
-    console.log('📋 ENV PUBLIC_KEY:', process.env.EXPO_PUBLIC_PAYSTACK_PUBLIC_KEY ? 
-      `${process.env.EXPO_PUBLIC_PAYSTACK_PUBLIC_KEY.substring(0, 12)}...${process.env.EXPO_PUBLIC_PAYSTACK_PUBLIC_KEY.substring(process.env.EXPO_PUBLIC_PAYSTACK_PUBLIC_KEY.length - 4)}` : 
-      'UNDEFINED - ignoring');
-    console.log('🔐 ENV SECRET_KEY:', process.env.EXPO_PUBLIC_PAYSTACK_SECRET_KEY ? 
-      `${process.env.EXPO_PUBLIC_PAYSTACK_SECRET_KEY.substring(0, 12)}...${process.env.EXPO_PUBLIC_PAYSTACK_SECRET_KEY.substring(process.env.EXPO_PUBLIC_PAYSTACK_SECRET_KEY.length - 4)}` : 
-      'UNDEFINED - ignoring');
-    console.log('✅ FINAL PUBLIC_KEY:', `${this.PUBLIC_KEY.substring(0, 12)}...${this.PUBLIC_KEY.substring(this.PUBLIC_KEY.length - 4)}`);
-    console.log('🔒 FINAL SECRET_KEY:', `${this.SECRET_KEY.substring(0, 12)}...${this.SECRET_KEY.substring(this.SECRET_KEY.length - 4)}`);
+    console.log('🧪 Paystack mode:', this.isTestMode ? 'test' : 'live');
   }
 
   // Ghana-specific payment methods
@@ -182,39 +169,32 @@ class PaymentService {
   /**
    * Initialize payment transaction with Paystack
    */
-  private static async initializeTransaction(paymentData: PaymentData): Promise<any> {
+  private static async initializeTransaction(
+    paymentData: PaymentData,
+    paymentMethodId: string,
+  ): Promise<any> {
     console.log(`Initializing Paystack transaction for ${paymentData.amount} GHS`);
-    console.log(`Using secret key: ${this.SECRET_KEY.substring(0, 12)}...${this.SECRET_KEY.substring(this.SECRET_KEY.length - 4)}`);
-    
-    const response = await fetch(`${this.BASE_URL}/transaction/initialize`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${this.SECRET_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        amount: this.toKobo(paymentData.amount),
-        email: paymentData.email,
-        currency: paymentData.currency,
+
+    const { data, error } = await supabase.functions.invoke('payment-gateway', {
+      body: {
+        action: 'initialize',
+        paymentMethodId,
         reference: paymentData.reference,
-        callback_url: paymentData.callback_url,
-        metadata: paymentData.metadata,
-      }),
+        callbackUrl: paymentData.callback_url,
+      },
     });
 
-    const result = await response.json();
-    
-    if (!response.ok || !result.status) {
-      console.error('Transaction initialization failed:', result);
-      throw new Error(`Payment initialization failed: ${result.message || 'Unknown error'}`);
+    if (error || !data?.success || !data?.data) {
+      console.error('Transaction initialization failed:', error ?? data);
+      throw new Error(data?.error || 'Payment initialization failed');
     }
 
     console.log('Transaction initialized successfully:', {
-      reference: result.data.reference,
-      access_code: result.data.access_code,
+      reference: data.data.reference,
+      access_code: data.data.access_code,
     });
 
-    return result.data;
+    return data.data;
   }
 
   /**
@@ -228,7 +208,10 @@ class PaymentService {
       this.debugEnvironment();
       
       // In test mode, just initialize transaction and return authorization URL like cards
-      const initData = await this.initializeTransaction(paymentData);
+      const initData = await this.initializeTransaction(
+        paymentData,
+        `momo_${paymentData.provider}`,
+      );
       console.log('Mobile Money transaction initialized:', initData.reference);
       
       // Return response indicating payment needs completion via Paystack interface
@@ -255,7 +238,7 @@ class PaymentService {
   static async processCardPayment(paymentData: CardData): Promise<PaymentResponse> {
     try {
       // Initialize transaction
-      const initData = await this.initializeTransaction(paymentData);
+      const initData = await this.initializeTransaction(paymentData, 'card');
       
       console.log('Card payment initialized, returning authorization URL');
 
@@ -278,30 +261,7 @@ class PaymentService {
    */
   static async processBankTransferPayment(paymentData: BankTransferData): Promise<PaymentResponse> {
     try {
-      // Initialize transaction with bank transfer channel
-      const response = await fetch(`${this.BASE_URL}/transaction/initialize`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${this.SECRET_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          amount: this.toKobo(paymentData.amount),
-          email: paymentData.email,
-          currency: paymentData.currency,
-          reference: paymentData.reference,
-          channels: ['bank'], // Restrict to bank transfer only
-          metadata: paymentData.metadata,
-        }),
-      });
-
-      const result = await response.json();
-      
-      if (!response.ok || !result.status) {
-        throw new Error(`Bank transfer initialization failed: ${result.message || 'Unknown error'}`);
-      }
-
-      const data = result.data;
+      const data = await this.initializeTransaction(paymentData, 'bank_transfer');
 
       return {
         success: false, // Requires user action
@@ -324,33 +284,28 @@ class PaymentService {
     try {
       console.log(`Verifying payment: ${reference}`);
       
-      const response = await fetch(`${this.BASE_URL}/transaction/verify/${reference}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${this.SECRET_KEY}`,
-          'Content-Type': 'application/json',
-        },
+      const { data, error } = await supabase.functions.invoke('payment-gateway', {
+        body: { action: 'verify', reference },
       });
 
-      const result = await response.json();
-      
-      if (!response.ok || !result.status) {
-        throw new Error(`Payment verification failed: ${result.message || 'Unknown error'}`);
+      if (error || !data?.success || !data?.data) {
+        console.error('Payment verification failed:', error ?? data);
+        throw new Error(data?.error || 'Payment verification failed');
       }
 
-      const data = result.data;
+      const verification = data.data;
 
       return {
-        success: data.status === 'success',
-        status: data.status,
-        reference: data.reference,
-        amount: this.fromKobo(data.amount),
-        currency: data.currency,
-        transaction_id: data.id,
-        gateway_response: data.gateway_response,
-        paid_at: data.paid_at,
-        channel: data.channel,
-        metadata: data.metadata,
+        success: verification.status === 'success',
+        status: verification.status,
+        reference: verification.reference,
+        amount: this.fromKobo(verification.amount),
+        currency: verification.currency,
+        transaction_id: String(verification.id),
+        gateway_response: verification.gateway_response,
+        paid_at: verification.paid_at,
+        channel: verification.channel,
+        metadata: verification.metadata,
       };
 
     } catch (error) {

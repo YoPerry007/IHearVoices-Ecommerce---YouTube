@@ -24,6 +24,7 @@ import OrderHistoryScreen from './src/screens/OrderHistoryScreen';
 import OrderDetailsScreen from './src/screens/OrderDetailsScreen';
 import PrivacyPolicyScreen from './src/screens/PrivacyPolicyScreen';
 import TermsOfServiceScreen from './src/screens/TermsOfServiceScreen';
+import AIShoppingAssistantScreen from './src/screens/AIShoppingAssistantScreen';
 
 // Import auth screens
 import LoginScreen from './src/screens/auth/LoginScreen';
@@ -38,18 +39,9 @@ import AdminUsersScreen from './src/screens/admin/AdminUsersScreen';
 import AdminAnalyticsScreen from './src/screens/admin/AdminAnalyticsScreen';
 import AdminSettingsScreen from './src/screens/admin/AdminSettingsScreen';
 
-// Debug environment variables immediately on app load
-console.log('🔎 App.tsx Environment Debug:');
-console.log('PUBLIC KEY FROM ENV:', process.env.EXPO_PUBLIC_PAYSTACK_PUBLIC_KEY ? 
-  `${process.env.EXPO_PUBLIC_PAYSTACK_PUBLIC_KEY.substring(0, 12)}...${process.env.EXPO_PUBLIC_PAYSTACK_PUBLIC_KEY.substring(process.env.EXPO_PUBLIC_PAYSTACK_PUBLIC_KEY.length - 4)}` : 
-  'UNDEFINED');
-console.log('SECRET KEY FROM ENV:', process.env.EXPO_PUBLIC_PAYSTACK_SECRET_KEY ? 
-  `${process.env.EXPO_PUBLIC_PAYSTACK_SECRET_KEY.substring(0, 12)}...${process.env.EXPO_PUBLIC_PAYSTACK_SECRET_KEY.substring(process.env.EXPO_PUBLIC_PAYSTACK_SECRET_KEY.length - 4)}` : 
-  'UNDEFINED');
-
 import { COLORS } from './src/constants/theme';
 
-type Screen = 'home' | 'catalog' | 'cart' | 'product-details' | 'profile' | 'checkout' | 'payment-result' | 'order-history' | 'order-details' | 'privacy-policy' | 'terms-of-service';
+type Screen = 'home' | 'catalog' | 'assistant' | 'cart' | 'product-details' | 'profile' | 'checkout' | 'payment-result' | 'order-history' | 'order-details' | 'privacy-policy' | 'terms-of-service';
 type AdminScreen = 'dashboard' | 'products' | 'orders' | 'users' | 'analytics' | 'settings';
 type AuthScreen = 'login' | 'register' | 'forgot-password';
 
@@ -488,6 +480,19 @@ const AuthenticatedApp: React.FC = () => {
             onNavigateToCheckout={() => setCurrentScreen('checkout')}
           />
         );
+      case 'assistant':
+        return (
+          <AIShoppingAssistantScreen
+            onNavigateToProduct={(productId) => {
+              setSelectedProductId(productId);
+              setCurrentScreen('product-details');
+            }}
+            onNavigateToOrder={(orderId) => {
+              setSelectedOrderId(orderId);
+              setCurrentScreen('order-details');
+            }}
+          />
+        );
       case 'cart':
         return (
           <CartScreen
@@ -649,6 +654,20 @@ const AuthenticatedApp: React.FC = () => {
           />
           <Text style={[styles.tabLabel, currentScreen === 'catalog' && styles.tabLabelActive]}>
             Shop
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.tabItem, currentScreen === 'assistant' && styles.tabItemActive]}
+          onPress={() => setCurrentScreen('assistant')}
+        >
+          <Ionicons
+            name={currentScreen === 'assistant' ? 'sparkles' : 'sparkles-outline'}
+            size={24}
+            color={currentScreen === 'assistant' ? COLORS.primary : COLORS.textMuted}
+          />
+          <Text style={[styles.tabLabel, currentScreen === 'assistant' && styles.tabLabelActive]}>
+            Assistant
           </Text>
         </TouchableOpacity>
 

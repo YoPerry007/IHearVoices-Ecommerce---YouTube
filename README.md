@@ -12,11 +12,13 @@ A premium voice-activated ecommerce application built with React Native and Expo
 - **🎨 Modern UI**: Premium dark theme with Ghana-inspired colors (emerald green, amber gold)
 - **📱 Real-time Cart**: Database-integrated shopping cart with live updates
 - **🔐 Secure Auth**: Supabase authentication with role-based access control
+- **✨ AI Shopping Assistant**: Groq-powered catalog discovery, product Q&A, policy help, and private order tracking
 
 ## 🛠 Tech Stack
 
 - **Frontend**: React Native with Expo SDK 53, TypeScript
-- **Backend**: Supabase (PostgreSQL, Authentication, Real-time)
+- **Backend**: Supabase (PostgreSQL, Authentication, Real-time, Edge Functions)
+- **Shopping AI**: Groq Chat Completions with grounded, structured catalog responses
 - **Voice AI**: Python ML service with Google Speech Recognition
 - **Payments**: Paystack (Card, Mobile Money, Bank Transfer)
 - **Navigation**: React Navigation 7
@@ -31,6 +33,7 @@ A premium voice-activated ecommerce application built with React Native and Expo
 - Expo CLI (`npm install -g @expo/cli`)
 - Supabase account
 - Paystack account
+- Groq account and API key
 
 ### 1. Clone and Install
 
@@ -50,8 +53,7 @@ EXPO_PUBLIC_SUPABASE_URL=your_supabase_project_url
 EXPO_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 
 # Paystack Configuration
-EXPO_PUBLIC_PAYSTACK_PUBLIC_KEY=pk_test_your_test_public_key
-PAYSTACK_SECRET_KEY=sk_test_your_test_secret_key
+EXPO_PUBLIC_PAYSTACK_TEST_MODE=true
 ```
 
 ### 3. Database Setup
@@ -77,6 +79,31 @@ Service runs on `http://localhost:5000`
 
 ```bash
 npx expo start
+```
+
+### 6. AI Shopping Assistant
+
+The Groq key belongs in Supabase Edge Function secrets, never in `.env` or an
+`EXPO_PUBLIC_*` variable:
+
+```bash
+npx supabase login
+npx supabase link --project-ref ateiysixigcfpuopjhlb
+npx supabase secrets set GROQ_API_KEY=gsk_your_key
+npx supabase functions deploy shopping-assistant
+```
+
+The function requires a signed-in Supabase user. It queries products and that
+user's orders through Row Level Security, then returns only validated catalog
+and order IDs. To override the default production model, set the optional
+`GROQ_MODEL` function secret.
+
+Paystack initialization and verification also run server-side so its secret is
+never included in the APK:
+
+```bash
+npx supabase secrets set PAYSTACK_SECRET_KEY=sk_test_your_test_secret_key
+npx supabase functions deploy payment-gateway
 ```
 
 ## 🎤 Voice Commands
@@ -117,6 +144,7 @@ src/
 
 python_ml_service/    # Voice AI service
 supabase/            # Database schema
+  └── functions/     # Server-side integrations (Groq assistant)
 ```
 
 ## 🔧 Key Services
@@ -143,9 +171,17 @@ supabase/            # Database schema
 
 ### Mobile App
 ```bash
-npx expo build:android
-npx expo build:ios
+# Directly installable Android APK
+npm run build:android:apk
+
+# App-store builds
+npx eas build --platform android --profile production
+npx eas build --platform ios --profile production
 ```
+
+The installed Android app discovers the Python voice service on the same Wi-Fi
+network. Start `python_ml_service/start_simple_service.bat` when voice commands
+are needed; the APK itself does not require the Expo development server.
 
 ### ML Service
 Deploy Python service to Heroku/Railway/DigitalOcean and update URL in `ExpoVoiceService.ts`

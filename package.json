@@ -6,7 +6,10 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "check": "tsc --noEmit && npx expo-doctor",
+    "export:android": "expo export --platform android",
+    "build:android:apk": "npx eas-cli build --platform android --profile preview"
   },
   "dependencies": {
     "@expo/metro-runtime": "~5.0.5",
