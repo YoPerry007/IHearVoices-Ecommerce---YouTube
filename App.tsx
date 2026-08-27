@@ -704,7 +704,7 @@ const AuthenticatedApp: React.FC = () => {
 
   const renderFloatingVoiceButton = () => {
     // Hide floating button on profile, product details, checkout, privacy policy, terms of service, order history, and order details screens
-    const hiddenScreens = ['profile', 'product-details', 'checkout', 'privacy-policy', 'terms-of-service', 'order-history', 'order-details'];
+    const hiddenScreens = ['assistant', 'profile', 'product-details', 'checkout', 'privacy-policy', 'terms-of-service', 'order-history', 'order-details'];
     if (hiddenScreens.includes(currentScreen)) {
       return null;
     }

@@ -68,7 +68,31 @@ export class ShoppingAssistantService {
         content: item.content.trim().slice(0, MAX_MESSAGE_LENGTH),
       }));
 
+    let {
+      data: { session },
+      error: sessionError,
+    } = await supabase.auth.getSession();
+
+    if (sessionError || !session) {
+      throw new Error('Your session has expired. Please sign in again.');
+    }
+
+    const expiresSoon =
+      typeof session.expires_at === 'number' &&
+      session.expires_at <= Math.floor(Date.now() / 1000) + 60;
+
+    if (expiresSoon) {
+      const { data: refreshed, error: refreshError } = await supabase.auth.refreshSession();
+      if (refreshError || !refreshed.session) {
+        throw new Error('Your session has expired. Please sign in again.');
+      }
+      session = refreshed.session;
+    }
+
     const { data, error } = await supabase.functions.invoke('shopping-assistant', {
+      headers: {
+        Authorization: `Bearer ${session.access_token}`,
+      },
       body: {
         message: trimmedMessage,
         history: safeHistory,
@@ -77,6 +101,10 @@ export class ShoppingAssistantService {
 
     if (error) {
       console.error('Shopping assistant request failed:', error);
+      const status = (error as { context?: { status?: number } }).context?.status;
+      if (status === 401) {
+        throw new Error('Your session has expired. Please sign out and sign in again.');
+      }
       throw new Error(
         'The shopping assistant is unavailable right now. Please try again shortly.',
       );

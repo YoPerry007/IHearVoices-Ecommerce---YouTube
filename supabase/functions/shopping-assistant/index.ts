@@ -295,7 +295,7 @@ const callGroq = async (
     items: orderItemNames(order),
   }));
 
-  const systemPrompt = `You are a professional e-commerce shopping assistant for the IHearVoices multi-seller marketplace.
+  const systemPrompt = `You are a professional e-commerce shopping assistant for the IHearVoices marketplace.
 
 Responsibilities:
 1. Help users search for and discover products.
@@ -393,6 +393,11 @@ Deno.serve(async (request) => {
     return jsonResponse({ error: 'Authentication required' }, 401);
   }
 
+  const accessToken = authorization.slice('Bearer '.length).trim();
+  if (!accessToken) {
+    return jsonResponse({ error: 'Authentication required' }, 401);
+  }
+
   try {
     const body = await request.json();
     const message = typeof body?.message === 'string' ? body.message.trim() : '';
@@ -412,8 +417,12 @@ Deno.serve(async (request) => {
       auth: { persistSession: false, autoRefreshToken: false },
     });
 
-    const { data: authData, error: authError } = await supabase.auth.getUser();
+    // Passing the caller token explicitly is required here. Calling getUser()
+    // without it can fall back to the function client's API key and reject a
+    // valid signed-in app session as anonymous.
+    const { data: authData, error: authError } = await supabase.auth.getUser(accessToken);
     if (authError || !authData.user) {
+      console.warn('Assistant request rejected: invalid user session');
       return jsonResponse({ error: 'Invalid or expired session' }, 401);
     }
 

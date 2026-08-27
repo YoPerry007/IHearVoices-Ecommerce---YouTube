@@ -232,7 +232,7 @@ const AIShoppingAssistantScreen: React.FC<AIShoppingAssistantScreenProps> = ({
           <Text style={styles.headerTitle}>Shopping Assistant</Text>
           <View style={styles.onlineRow}>
             <View style={styles.onlineDot} />
-            <Text style={styles.headerSubtitle}>Powered by Groq</Text>
+          <Text style={styles.headerSubtitle}>Secure AI assistant</Text>
           </View>
         </View>
         <TouchableOpacity

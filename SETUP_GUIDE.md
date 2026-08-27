@@ -168,23 +168,36 @@ Only start `python_ml_service/start_simple_service.bat` when you want the local
 voice backend; Supabase, the shopping assistant, and payment functions are
 hosted remotely.
 
-## 👨‍💼 Admin Access Setup
+## 👥 Account Types (Important)
 
-### 1. Register Account
-1. Open app and register new account
-2. Complete registration process
+This version is role-based, not a true multi-tenant organization system. It
+supports multiple independent user accounts in one marketplace with two roles:
 
-### 2. Grant Admin Role
-1. Go to Supabase dashboard
-2. Navigate to **Table Editor** → **profiles**
-3. Find your user record
-4. Change `role` from `user` to `admin`
-5. Save changes
+- `user`: buyer account; sees only its own cart, orders, and profile through RLS.
+- `admin`: marketplace administrator; receives the admin dashboard.
 
-### 3. Access Admin Panel
-1. Restart the app
-2. You'll now see admin interface instead of user interface
-3. Access all admin features: products, orders, users, analytics
+There are currently no tenant, organization, shop, membership, or seller-owner
+records. Do not describe this deployment as tenant-isolated SaaS. Adding shops
+or organizations requires a separate tenant schema and tenant-scoped RLS on
+products, orders, memberships, and admin actions.
+
+### Create Buyer Accounts
+
+1. Open the app and choose **Create Account**.
+2. Enter a unique email and password for each buyer.
+3. Confirm the email if Supabase email confirmation is enabled.
+4. Sign in. The database trigger creates the matching `profiles` row with the
+   `user` role.
+
+### Create an Administrator
+
+1. Register the person through the app first.
+2. In Supabase, open **Table Editor** → **profiles**.
+3. Find that person's email and change `role` from `user` to `admin`.
+4. Have the person sign out and sign in again.
+
+Never let a public registration form choose the `admin` role. Admin promotion
+must remain an authenticated dashboard/database operation.
 
 ## 🔍 Troubleshooting
 
