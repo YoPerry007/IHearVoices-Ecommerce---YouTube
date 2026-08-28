@@ -44,6 +44,7 @@ const ProductCatalogScreen: React.FC<ProductCatalogScreenProps> = ({
   const { addToCart, totalItems } = useCart();
   const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
   const [selectedCategory, setSelectedCategory] = useState(category || 'all');
+  const [selectedStore, setSelectedStore] = useState('all');
   const [sortBy, setSortBy] = useState<'name' | 'price' | 'rating'>('name');
   const [refreshing, setRefreshing] = useState(false);
   const [isVoiceSearch, setIsVoiceSearch] = useState(false);
@@ -69,7 +70,7 @@ const ProductCatalogScreen: React.FC<ProductCatalogScreenProps> = ({
 
   useEffect(() => {
     filterProducts();
-  }, [products, selectedCategory, searchQuery, sortBy]);
+  }, [products, selectedCategory, selectedStore, searchQuery, sortBy]);
 
   // Handle voice search query
   useEffect(() => {
@@ -102,6 +103,10 @@ const ProductCatalogScreen: React.FC<ProductCatalogScreenProps> = ({
     // Filter by category
     if (selectedCategory !== 'all') {
       filtered = filtered.filter(product => product.category === selectedCategory);
+    }
+
+    if (selectedStore !== 'all') {
+      filtered = filtered.filter(product => product.organization_id === selectedStore);
     }
 
     // Filter by search query
@@ -241,6 +246,12 @@ const ProductCatalogScreen: React.FC<ProductCatalogScreenProps> = ({
     </TouchableOpacity>
   );
 
+  const stores = Array.from(new Map(
+    products
+      .filter(item => item.organization?.id)
+      .map(item => [item.organization!.id, item.organization!])
+  ).values());
+
   const renderSortOption = (option: { key: string; label: string }) => (
     <TouchableOpacity
       key={option.key}
@@ -340,6 +351,24 @@ const ProductCatalogScreen: React.FC<ProductCatalogScreenProps> = ({
           contentContainerStyle={styles.categoriesContainer}
         />
       </View>
+
+      {stores.length > 1 && (
+        <View style={styles.storesSection}>
+          <Text style={styles.storeFilterLabel}>Store:</Text>
+          <FlatList
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            data={[{ id: 'all', name: 'All stores' }, ...stores]}
+            keyExtractor={item => item.id}
+            contentContainerStyle={styles.storeFilters}
+            renderItem={({ item }) => (
+              <TouchableOpacity style={[styles.storeChip, selectedStore === item.id && styles.storeChipActive]} onPress={() => setSelectedStore(item.id)}>
+                <Text style={[styles.storeChipText, selectedStore === item.id && styles.storeChipTextActive]}>{item.name}</Text>
+              </TouchableOpacity>
+            )}
+          />
+        </View>
+      )}
 
       {/* Sort Options */}
       <View style={styles.sortSection}>
@@ -456,6 +485,38 @@ const styles = StyleSheet.create({
   },
   categoriesSection: {
     marginBottom: SPACING.md,
+  },
+  storesSection: {
+    marginBottom: SPACING.md,
+  },
+  storeFilterLabel: {
+    color: COLORS.textSecondary,
+    fontSize: TYPOGRAPHY.fontSize.sm,
+    paddingHorizontal: SPACING.md,
+    marginBottom: SPACING.xs,
+  },
+  storeFilters: {
+    paddingHorizontal: SPACING.md,
+    gap: SPACING.sm,
+  },
+  storeChip: {
+    borderWidth: 1,
+    borderColor: COLORS.surfaceLight,
+    borderRadius: BORDER_RADIUS.lg,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+  },
+  storeChipActive: {
+    borderColor: COLORS.primary,
+    backgroundColor: COLORS.primary,
+  },
+  storeChipText: {
+    color: COLORS.textSecondary,
+    fontSize: TYPOGRAPHY.fontSize.sm,
+  },
+  storeChipTextActive: {
+    color: COLORS.white,
+    fontWeight: TYPOGRAPHY.fontWeight.semibold,
   },
   categoriesContainer: {
     paddingHorizontal: SPACING.md,

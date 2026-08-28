@@ -32,6 +32,7 @@ import SellerDashboardScreen from './src/screens/seller/SellerDashboardScreen';
 import LoginScreen from './src/screens/auth/LoginScreen';
 import RegisterScreen from './src/screens/auth/RegisterScreen';
 import ForgotPasswordScreen from './src/screens/auth/ForgotPasswordScreen';
+import ResetPasswordScreen from './src/screens/auth/ResetPasswordScreen';
 
 // Import admin screens
 import AdminDashboardScreen from './src/screens/admin/AdminDashboardScreen';
@@ -217,7 +218,7 @@ const AdminApp: React.FC<AdminAppProps> = ({ currentAdminScreen, setCurrentAdmin
 
 // Main App Component with Authentication Guards
 const AuthenticatedApp: React.FC = () => {
-  const { user, profile, loading, isAuthenticated, isAdmin, isStoreOwner, isCustomer } = useAuth();
+  const { user, profile, loading, passwordRecovery, isAuthenticated, isAdmin, isStoreOwner, isCustomer } = useAuth();
   const { clearCart, addToCart, refreshCart } = useCart();
   const [currentScreen, setCurrentScreen] = useState<Screen>('home');
   const [currentAdminScreen, setCurrentAdminScreen] = useState<AdminScreen>('dashboard');
@@ -303,6 +304,10 @@ const AuthenticatedApp: React.FC = () => {
   // Render admin interface if user is admin
   if (isAuthenticated && isAdmin) {
     return <AdminApp currentAdminScreen={currentAdminScreen} setCurrentAdminScreen={setCurrentAdminScreen} />;
+  }
+
+  if (passwordRecovery) {
+    return <ResetPasswordScreen />;
   }
 
   // Owners stay in a tenant-scoped workspace; customer voice UI is never mounted.

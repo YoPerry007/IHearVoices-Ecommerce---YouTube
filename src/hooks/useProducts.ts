@@ -17,8 +17,8 @@ export interface Product {
   discount_percentage: number;
   rating: number;
   review_count: number;
-  organization_id: string;
-  status: 'draft' | 'published' | 'archived';
+  organization_id?: string;
+  status?: 'draft' | 'published' | 'archived';
   organization?: { id: string; name: string; slug: string; logo_url: string | null; status: string } | null;
   created_at: string;
   updated_at: string;

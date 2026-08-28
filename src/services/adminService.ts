@@ -110,9 +110,18 @@ export class AdminService {
 
   static async createProduct(productData: ProductFormData): Promise<Product> {
     try {
+      const { data: platformStore, error: storeError } = await supabase
+        .from('organizations')
+        .select('id')
+        .eq('slug', 'ihearvoices')
+        .single();
+      if (storeError || !platformStore) throw storeError || new Error('Platform store is missing');
+
       const { data, error } = await supabase
         .from('products')
         .insert([{
+          organization_id: platformStore.id,
+          status: 'published',
           name: productData.name,
           description: productData.description,
           category: productData.category,

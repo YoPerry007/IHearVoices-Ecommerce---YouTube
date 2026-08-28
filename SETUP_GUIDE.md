@@ -32,11 +32,16 @@ EXPO_PUBLIC_PAYSTACK_TEST_MODE=true
 3. Choose organization and enter project details
 4. Wait for project to be ready
 
-### 2. Apply Database Schema
-1. Go to **SQL Editor** in Supabase dashboard
-2. Copy entire contents of `supabase/schema.sql`
-3. Paste and click **Run**
-4. Verify tables are created in **Table Editor**
+### 2. Apply Database Migrations
+
+Link the project and apply the versioned migrations. Do not paste the legacy
+`schema.sql` into an existing project.
+
+```bash
+npx supabase login
+npx supabase link --project-ref YOUR_PROJECT_REF
+npx supabase db push
+```
 
 ### 3. Get API Keys
 1. Go to **Settings** → **API**
@@ -168,36 +173,61 @@ Only start `python_ml_service/start_simple_service.bat` when you want the local
 voice backend; Supabase, the shopping assistant, and payment functions are
 hosted remotely.
 
-## 👥 Account Types (Important)
+## 👥 Marketplace Accounts
 
-This version is role-based, not a true multi-tenant organization system. It
-supports multiple independent user accounts in one marketplace with two roles:
+This deployment is tenant-isolated and intentionally supports exactly three
+account experiences: Customer, Store Owner, and Platform Admin. There are no
+staff invitations or manager roles.
 
-- `user`: buyer account; sees only its own cart, orders, and profile through RLS.
-- `admin`: marketplace administrator; receives the admin dashboard.
-
-There are currently no tenant, organization, shop, membership, or seller-owner
-records. Do not describe this deployment as tenant-isolated SaaS. Adding shops
-or organizations requires a separate tenant schema and tenant-scoped RLS on
-products, orders, memberships, and admin actions.
-
-### Create Buyer Accounts
+### Create a Customer
 
 1. Open the app and choose **Create Account**.
-2. Enter a unique email and password for each buyer.
-3. Confirm the email if Supabase email confirmation is enabled.
-4. Sign in. The database trigger creates the matching `profiles` row with the
-   `user` role.
+2. Use a unique email and a password with at least 8 characters, uppercase,
+   lowercase, and a number.
+3. Confirm the email if confirmation is enabled, then sign in.
+4. The signup trigger creates a customer profile. RLS restricts the account to
+   its own profile, cart, orders, and voice history.
 
-### Create an Administrator
+### Create a Store Owner
+
+1. Create and sign in to a normal customer account.
+2. Open **Profile** and tap **Become a Seller**.
+3. Enter the store name, public description, contact details, location, and
+   optional logo URL, then submit.
+4. The account immediately switches to the seller workspace in `pending` state.
+5. A Platform Admin opens **Stores** and approves or rejects the application.
+6. Once approved, the owner can edit store branding, create/edit/archive
+   products, view only that store's order portions and customers, and update
+   fulfillment status.
+
+An account can own only one store. Store owners cannot use the customer voice
+assistant, and the Edge Function enforces that restriction even if someone
+tries to call it outside the app.
+
+### Create a Platform Admin
 
 1. Register the person through the app first.
-2. In Supabase, open **Table Editor** → **profiles**.
-3. Find that person's email and change `role` from `user` to `admin`.
-4. Have the person sign out and sign in again.
+2. Have an existing Platform Admin open **Users** in the admin dashboard and
+   change that account to `admin`.
+3. Sign out and sign back in to load the admin workspace.
 
-Never let a public registration form choose the `admin` role. Admin promotion
-must remain an authenticated dashboard/database operation.
+For the first administrator only, promote the existing profile in the Supabase
+dashboard using a trusted database administrator session. Public registration
+can never choose or self-promote to `admin`; a database trigger rejects it.
+
+### How Multi-store Orders Work
+
+Customers browse one approved catalog and can filter by store. Checkout creates
+one parent order for the customer and one `seller_orders` record per store in a
+single database transaction. Each owner sees only their portion; the customer
+and Platform Admin can see the overall order and store-by-store fulfillment.
+
+### Production Auth Hardening
+
+In Supabase Dashboard, open **Authentication → Sign In / Providers → Email** and
+enable leaked-password protection when the project plan supports it. Also set
+the allowed redirect URL to `ihearvoices://reset-password` so password recovery
+opens the secure in-app reset screen.
 
 ## 🔍 Troubleshooting
 

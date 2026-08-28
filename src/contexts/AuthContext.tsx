@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { Platform } from 'react-native';
+import { Linking } from 'react-native';
 import { Session, User, AuthError } from '@supabase/supabase-js';
 import { supabase } from '../config/supabase';
 import MarketplaceService, { Organization } from '../services/marketplaceService';
@@ -24,12 +24,15 @@ interface AuthContextType {
   organization: Organization | null;
   session: Session | null;
   loading: boolean;
+  passwordRecovery: boolean;
   
   // Auth methods
   signUp: (email: string, password: string, fullName?: string, phone?: string) => Promise<{ error: AuthError | null }>;
   signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>;
   signOut: () => Promise<{ error: AuthError | null }>;
   resetPassword: (email: string) => Promise<{ error: AuthError | null }>;
+  updatePassword: (password: string) => Promise<{ error: AuthError | null }>;
+  cancelPasswordRecovery: () => Promise<void>;
   updateProfile: (updates: Partial<Profile>) => Promise<{ error: Error | null }>;
   refreshAccount: () => Promise<void>;
   
@@ -60,34 +63,43 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [organization, setOrganization] = useState<Organization | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
-  const e2eWebAuthEnabled = Platform.OS === 'web' && process.env.EXPO_PUBLIC_E2E_AUTH === '1';
-
+  const [passwordRecovery, setPasswordRecovery] = useState(false);
   // Initialize auth state
   useEffect(() => {
-    if (e2eWebAuthEnabled) {
-      const now = new Date().toISOString();
-      const testUser = {
-        id: '00000000-0000-4000-8000-000000000001',
-        email: 'codex-voice-test@example.com',
-      } as User;
+    const handleAuthUrl = async (url: string | null) => {
+      if (!url || !url.startsWith('ihearvoices://')) return;
 
-      setSession({ user: testUser } as Session);
-      setUser(testUser);
-      setProfile({
-        id: testUser.id,
-        email: testUser.email || 'codex-voice-test@example.com',
-        full_name: 'Codex Voice Test',
-        phone: null,
-        address: null,
-        avatar_url: null,
-        role: 'user',
-        created_at: now,
-        updated_at: now,
-      });
-      setOrganization(null);
-      setLoading(false);
-      return;
-    }
+      const parameterText = url.includes('#')
+        ? url.slice(url.indexOf('#') + 1)
+        : url.includes('?') ? url.slice(url.indexOf('?') + 1) : '';
+      const parameters = new URLSearchParams(parameterText);
+      const type = parameters.get('type');
+      const code = parameters.get('code');
+      const accessToken = parameters.get('access_token');
+      const refreshToken = parameters.get('refresh_token');
+
+      try {
+        if (code) {
+          const { error } = await supabase.auth.exchangeCodeForSession(code);
+          if (error) throw error;
+        } else if (accessToken && refreshToken) {
+          const { error } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken,
+          });
+          if (error) throw error;
+        }
+
+        if (type === 'recovery' || url.includes('reset-password')) {
+          setPasswordRecovery(true);
+        }
+      } catch (error) {
+        console.error('Could not open authentication link:', error);
+      }
+    };
+
+    Linking.getInitialURL().then(handleAuthUrl);
+    const linkingSubscription = Linking.addEventListener('url', ({ url }) => handleAuthUrl(url));
 
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -104,8 +116,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state changed:', event, session?.user?.email);
-      
+      if (event === 'PASSWORD_RECOVERY') setPasswordRecovery(true);
       setSession(session);
       setUser(session?.user ?? null);
       
@@ -118,15 +129,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
     });
 
-    return () => subscription.unsubscribe();
-  }, [e2eWebAuthEnabled]);
+    return () => {
+      subscription.unsubscribe();
+      linkingSubscription.remove();
+    };
+  }, []);
 
   // Fetch user profile
   const fetchProfile = async (userId: string) => {
     try {
       setLoading(true);
-      
-      console.log('Fetching profile for user:', userId);
       
       const { data, error } = await supabase
         .from('profiles')
@@ -257,14 +269,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  const updatePassword = async (password: string) => {
+    try {
+      const { error } = await supabase.auth.updateUser({ password });
+      if (!error) setPasswordRecovery(false);
+      return { error };
+    } catch (error) {
+      return { error: error as AuthError };
+    }
+  };
+
+  const cancelPasswordRecovery = async () => {
+    setPasswordRecovery(false);
+    await supabase.auth.signOut();
+  };
+
   // Update profile
   const updateProfile = async (updates: Partial<Profile>) => {
     try {
       if (!user) {
         return { error: new Error('No user logged in') };
       }
-
-      console.log('Updating profile for user:', user.id, updates);
 
       // Only update fields that exist in the database schema
       const validUpdates = {
@@ -281,19 +306,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       if (error) {
         console.error('Database update failed:', error);
-        console.log('Updating temporary profile instead...');
-        
-        // Update temporary profile as fallback
-        if (profile) {
-          const updatedProfile = {
-            ...profile,
-            ...updates,
-            updated_at: new Date().toISOString(),
-          };
-          setProfile(updatedProfile);
-        }
-        
-        return { error: null }; // Return success even if database fails
+        return { error };
       }
 
       // Refresh profile
@@ -301,18 +314,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       return { error: null };
     } catch (error) {
       console.error('Profile update error:', error);
-      
-      // Fallback update even if everything fails
-      if (profile) {
-        const updatedProfile = {
-          ...profile,
-          ...updates,
-          updated_at: new Date().toISOString(),
-        };
-        setProfile(updatedProfile);
-      }
-      
-      return { error: null }; // Return success for user experience
+      return { error: error as Error };
     }
   };
 
@@ -329,12 +331,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     organization,
     session,
     loading,
+    passwordRecovery,
     
     // Methods
     signUp,
     signIn,
     signOut,
     resetPassword,
+    updatePassword,
+    cancelPasswordRecovery,
     updateProfile,
     refreshAccount,
     

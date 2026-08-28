@@ -23,6 +23,9 @@ interface ProductRecord {
   discount_percentage: number;
   rating: number;
   review_count: number;
+  organization_id: string;
+  status: string;
+  organization?: { id: string; name: string; slug: string } | Array<{ id: string; name: string; slug: string }> | null;
 }
 
 interface OrderRecord {
@@ -214,8 +217,9 @@ const loadProductContext = async (supabase: any, message: string) => {
   let query = supabase
     .from('products')
     .select(
-      'id,name,description,category,price,images,brand,sizes,colors,in_stock,stock_count,featured,discount_percentage,rating,review_count',
+      'id,name,description,category,price,images,brand,sizes,colors,in_stock,stock_count,featured,discount_percentage,rating,review_count,organization_id,status,organization:organizations!products_organization_id_fkey(id,name,slug)',
     )
+    .eq('status', 'published')
     .eq('in_stock', true)
     .gt('stock_count', 0);
 
@@ -282,6 +286,7 @@ const callGroq = async (
     rating: Number(product.rating || 0),
     review_count: product.review_count,
     discount_percentage: product.discount_percentage,
+    store: Array.isArray(product.organization) ? product.organization[0]?.name : product.organization?.name,
   }));
 
   const orderContext = orders.map((order) => ({
@@ -424,6 +429,18 @@ Deno.serve(async (request) => {
     if (authError || !authData.user) {
       console.warn('Assistant request rejected: invalid user session');
       return jsonResponse({ error: 'Invalid or expired session' }, 401);
+    }
+
+    // Voice and AI shopping are customer-only. Owners/admins are rejected server-side,
+    // even if they manually call this function outside the app UI.
+    const [{ data: callerProfile, error: profileError }, { data: ownedStore, error: storeError }] = await Promise.all([
+      supabase.from('profiles').select('role').eq('id', authData.user.id).single(),
+      supabase.from('organizations').select('id').eq('owner_id', authData.user.id).maybeSingle(),
+    ]);
+    if (profileError || storeError) throw profileError || storeError;
+    if (callerProfile?.role === 'admin' || ownedStore) {
+      console.warn('Assistant request rejected: customer access required');
+      return jsonResponse({ error: 'Shopping assistant is available to customers only' }, 403);
     }
 
     const [products, orders] = await Promise.all([

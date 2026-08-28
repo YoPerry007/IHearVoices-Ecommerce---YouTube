@@ -30,6 +30,17 @@ const ExpoSecureStoreAdapter = {
   },
   setItem: async (key: string, value: string) => {
     try {
+      // Clear the previous representation first. A refreshed session may switch
+      // between chunked and unchunked storage, and stale chunks must never win.
+      const previousChunkCount = await SecureStore.getItemAsync(`${key}_count`);
+      if (previousChunkCount) {
+        for (let i = 0; i < parseInt(previousChunkCount, 10); i++) {
+          await SecureStore.deleteItemAsync(`${key}_${i}`);
+        }
+        await SecureStore.deleteItemAsync(`${key}_count`);
+      }
+      await SecureStore.deleteItemAsync(key);
+
       // Split large values into chunks to avoid the 2048 byte limit
       if (value.length > 2000) {
         const chunks = [];
@@ -59,9 +70,8 @@ const ExpoSecureStoreAdapter = {
         for (let i = 0; i < count; i++) {
           await SecureStore.deleteItemAsync(`${key}_${i}`);
         }
-      } else {
-        await SecureStore.deleteItemAsync(key);
       }
+      await SecureStore.deleteItemAsync(key);
     } catch (error) {
       console.warn('SecureStore removeItem error:', error);
     }

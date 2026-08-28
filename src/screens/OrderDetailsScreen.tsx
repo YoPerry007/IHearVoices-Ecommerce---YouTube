@@ -176,6 +176,27 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({
             </View>
           </View>
 
+          {!!order.seller_orders?.length && (
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Store Fulfillment</Text>
+              <View style={styles.sectionContent}>
+                {order.seller_orders.map((sellerOrder) => (
+                  <View key={sellerOrder.id} style={styles.summaryItem}>
+                    <View>
+                      <Text style={styles.addressName}>{sellerOrder.organization?.name || 'IHearVoices'}</Text>
+                      <Text style={styles.addressText}>GH₵{Number(sellerOrder.subtotal).toFixed(2)}</Text>
+                    </View>
+                    <View style={[styles.statusBadge, { backgroundColor: getStatusColor(sellerOrder.status) + '20' }]}>
+                      <Text style={[styles.statusText, { color: getStatusColor(sellerOrder.status) }]}>
+                        {getStatusText(sellerOrder.status)}
+                      </Text>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            </View>
+          )}
+
           {/* Order Items */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Items Ordered</Text>

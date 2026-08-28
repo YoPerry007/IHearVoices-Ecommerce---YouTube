@@ -19,6 +19,8 @@ export interface AssistantProduct {
   rating: number;
   review_count: number;
   discount_percentage: number;
+  organization_id?: string;
+  organization?: { id: string; name: string; slug: string } | null;
 }
 
 export interface AssistantOrder {
@@ -104,6 +106,9 @@ export class ShoppingAssistantService {
       const status = (error as { context?: { status?: number } }).context?.status;
       if (status === 401) {
         throw new Error('Your session has expired. Please sign out and sign in again.');
+      }
+      if (status === 403) {
+        throw new Error('The shopping assistant is available to customer accounts only.');
       }
       throw new Error(
         'The shopping assistant is unavailable right now. Please try again shortly.',

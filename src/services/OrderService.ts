@@ -68,7 +68,16 @@ export interface Order {
   // Populated from relations
   items?: OrderItem[];
   item_count?: number;
+  seller_orders?: Array<{
+    id: string;
+    status: OrderStatus;
+    subtotal: number;
+    organization?: { name: string; slug: string } | null;
+  }>;
 }
+
+const normalizeShippingAddress = (value: ShippingAddress | string): ShippingAddress =>
+  typeof value === 'string' ? JSON.parse(value) : value;
 
 export interface OrderSummary {
   total_orders: number;
@@ -104,7 +113,7 @@ class OrderService {
 
       return {
         ...order,
-        shipping_address: typeof order.shipping_address === 'string' ? JSON.parse(order.shipping_address) : order.shipping_address,
+        shipping_address: normalizeShippingAddress(order.shipping_address),
         items: (order.order_items || []).map((item: any) => ({ ...item, product: item.products })),
         item_count: order.order_items?.length || 0,
       } as Order;
@@ -152,6 +161,15 @@ class OrderService {
         throw new Error(`Failed to fetch order items: ${itemsError.message}`);
       }
 
+      const { data: sellerOrders, error: sellerOrdersError } = await supabase
+        .from('seller_orders')
+        .select('id,status,subtotal,organization:organizations!seller_orders_organization_id_fkey(name,slug)')
+        .eq('customer_order_id', orderId)
+        .order('created_at');
+      if (sellerOrdersError) {
+        throw new Error(`Failed to fetch seller order details: ${sellerOrdersError.message}`);
+      }
+
       const orderItems: OrderItem[] = items.map(item => ({
         product_id: item.product_id,
         quantity: item.quantity,
@@ -163,9 +181,10 @@ class OrderService {
 
       return {
         ...order,
-        shipping_address: JSON.parse(order.shipping_address),
+        shipping_address: normalizeShippingAddress(order.shipping_address),
         items: orderItems,
         item_count: orderItems.length,
+        seller_orders: (sellerOrders || []) as any,
       };
 
     } catch (error) {
@@ -196,6 +215,12 @@ class OrderService {
               name,
               images
             )
+          ),
+          seller_orders (
+            id,
+            status,
+            subtotal,
+            organization:organizations!seller_orders_organization_id_fkey(name,slug)
           )
         `, { count: 'exact' })
         .eq('user_id', userId)
@@ -215,7 +240,7 @@ class OrderService {
 
       const formattedOrders: Order[] = orders.map(order => ({
         ...order,
-        shipping_address: JSON.parse(order.shipping_address),
+        shipping_address: normalizeShippingAddress(order.shipping_address),
         item_count: order.order_items?.length || 0,
         items: order.order_items?.map((item: any) => ({
           product_id: item.product_id,
@@ -395,7 +420,7 @@ class OrderService {
 
       const recentOrders: Order[] = (recentOrdersData || []).map(order => ({
         ...order,
-        shipping_address: JSON.parse(order.shipping_address),
+        shipping_address: normalizeShippingAddress(order.shipping_address),
         item_count: order.order_items?.length || 0,
       }));
 
@@ -462,7 +487,7 @@ class OrderService {
 
       const formattedOrders: Order[] = orders.map(order => ({
         ...order,
-        shipping_address: JSON.parse(order.shipping_address),
+        shipping_address: normalizeShippingAddress(order.shipping_address),
         item_count: order.order_items?.length || 0,
       }));
 

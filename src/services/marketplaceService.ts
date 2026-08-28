@@ -166,6 +166,18 @@ export class MarketplaceService {
     return data;
   }
 
+  static async updateOwnerProduct(organizationId: string, productId: string, updates: Record<string, unknown>) {
+    const { data, error } = await supabase
+      .from('products')
+      .update(updates)
+      .eq('organization_id', organizationId)
+      .eq('id', productId)
+      .select('*')
+      .single();
+    if (error) throw error;
+    return data;
+  }
+
   static async getOwnerOrders(organizationId: string) {
     const { data, error } = await supabase
       .from('seller_orders')

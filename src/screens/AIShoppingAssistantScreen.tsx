@@ -145,6 +145,7 @@ const AIShoppingAssistantScreen: React.FC<AIShoppingAssistantScreenProps> = ({
         <Text numberOfLines={1} style={styles.productName}>
           {product.name}
         </Text>
+        <Text style={styles.productStore}>{product.organization?.name || 'IHearVoices'}</Text>
         <Text style={styles.productBrand}>{product.brand}</Text>
         <View style={styles.productMeta}>
           <Text style={styles.productPrice}>{formatPrice(product.price)}</Text>
@@ -361,6 +362,7 @@ const styles = StyleSheet.create({
   imagePlaceholder: { alignItems: 'center', justifyContent: 'center' },
   productInfo: { flex: 1, marginHorizontal: SPACING.sm },
   productName: { color: COLORS.textPrimary, fontSize: TYPOGRAPHY.fontSize.sm, fontWeight: '700' },
+  productStore: { color: COLORS.primary, fontSize: TYPOGRAPHY.fontSize.xs, fontWeight: '700', marginTop: 2 },
   productBrand: { color: COLORS.textMuted, fontSize: TYPOGRAPHY.fontSize.xs, marginTop: 2 },
   productMeta: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm, marginTop: 5 },
   productPrice: { color: COLORS.primaryLight, fontSize: TYPOGRAPHY.fontSize.sm, fontWeight: '700' },

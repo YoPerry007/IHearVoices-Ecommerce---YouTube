@@ -13,6 +13,8 @@ A premium voice-activated ecommerce application built with React Native and Expo
 - **📱 Real-time Cart**: Database-integrated shopping cart with live updates
 - **🔐 Secure Auth**: Supabase authentication with role-based access control
 - **✨ AI Shopping Assistant**: Groq-powered catalog discovery, product Q&A, policy help, and private order tracking
+- **🏪 Tenant-isolated Marketplace**: Customer, Store Owner, and Platform Admin workspaces with per-store RLS
+- **📦 Split Fulfillment**: One customer checkout becomes a private order portion for each participating store
 
 ## 🛠 Tech Stack
 
@@ -58,12 +60,14 @@ EXPO_PUBLIC_PAYSTACK_TEST_MODE=true
 
 ### 3. Database Setup
 
-1. Create Supabase project at [supabase.com](https://supabase.com)
-2. Go to SQL Editor and run:
-
-```sql
--- Copy contents from supabase/schema.sql and paste here
+```bash
+npx supabase login
+npx supabase link --project-ref YOUR_PROJECT_REF
+npx supabase db push
 ```
+
+The migrations create the owner-only tenant model, atomic multi-store checkout,
+role protection, and Row Level Security policies.
 
 ### 4. Python ML Service
 
@@ -129,6 +133,11 @@ Natural voice commands optimized for Ghanaian accents:
 1. Register account
 2. In Supabase → profiles table → change `role` to `admin`
 3. Restart app for admin interface
+
+Customers can apply to become a Store Owner from **Profile → Become a Seller**.
+An admin approves the application from **Admin → Stores**. Approved owners can
+manage only their store, products, and seller-order portions. Voice search and
+the Groq assistant remain customer-only.
 
 ## 📁 Project Structure
 
