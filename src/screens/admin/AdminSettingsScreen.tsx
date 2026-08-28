@@ -387,7 +387,7 @@ const AdminSettingsScreen: React.FC<AdminSettingsScreenProps> = ({
           <SettingItem
             icon="information-circle-outline"
             title="App Version"
-            subtitle="1.0.0 (Build 1)"
+            subtitle="1.1.2 (Build 5)"
           />
 
           <SettingItem

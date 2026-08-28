@@ -445,11 +445,11 @@ const UserProfileScreen: React.FC<UserProfileScreenProps> = ({
             <View style={styles.sectionContent}>
               <View style={styles.infoItem}>
                 <Text style={styles.infoLabel}>Version</Text>
-                <Text style={styles.infoValue}>1.1.1</Text>
+                <Text style={styles.infoValue}>1.1.2</Text>
               </View>
               <View style={styles.infoItem}>
                 <Text style={styles.infoLabel}>Build</Text>
-                <Text style={styles.infoValue}>4</Text>
+                <Text style={styles.infoValue}>5</Text>
               </View>
             </View>
           </View>
