@@ -1,5 +1,5 @@
 import { Product } from '../hooks/useProducts';
-import { AdminService } from './adminService';
+import MarketplaceService from './marketplaceService';
 
 export class ProductSearchService {
   private static products: Product[] = [];
@@ -19,7 +19,7 @@ export class ProductSearchService {
 
     try {
       console.log('🔍 Loading products for search...');
-      this.products = await AdminService.getAllProducts();
+      this.products = await MarketplaceService.getMarketplaceProducts() as Product[];
       this.lastFetch = now;
       console.log(`✅ Loaded ${this.products.length} products for search`);
       return this.products;

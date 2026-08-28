@@ -21,6 +21,7 @@ interface UserProfileScreenProps {
   onNavigateToOrderDetails?: (orderId: string) => void;
   onNavigateToPrivacyPolicy?: () => void;
   onNavigateToTermsOfService?: () => void;
+  onNavigateToSellerApplication?: () => void;
 }
 
 const UserProfileScreen: React.FC<UserProfileScreenProps> = ({
@@ -29,6 +30,7 @@ const UserProfileScreen: React.FC<UserProfileScreenProps> = ({
   onNavigateToOrderDetails,
   onNavigateToPrivacyPolicy,
   onNavigateToTermsOfService,
+  onNavigateToSellerApplication,
 }) => {
   const { user, profile, signOut, updateProfile, resetPassword } = useAuth();
   const [orderStats, setOrderStats] = useState({
@@ -222,6 +224,12 @@ const UserProfileScreen: React.FC<UserProfileScreenProps> = ({
   ];
 
   const actionItems = [
+    {
+      title: 'Become a Seller',
+      icon: 'storefront-outline',
+      color: COLORS.warning,
+      onPress: () => onNavigateToSellerApplication ? onNavigateToSellerApplication() : Alert.alert('Seller application', 'Navigation not configured')
+    },
     { 
       title: 'View Order History', 
       icon: 'receipt-outline', 

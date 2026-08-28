@@ -223,6 +223,7 @@ const ProductDetailsScreen: React.FC<ProductDetailsScreenProps> = ({
 
           {/* Product Info */}
           <View style={styles.productInfo}>
+            <Text style={styles.storeName}>{product.organization?.name || 'IHearVoices'}</Text>
             <View style={styles.brandContainer}>
               <Text style={styles.brandText}>{product.brand}</Text>
               <View style={styles.ratingContainer}>
@@ -478,6 +479,11 @@ const styles = StyleSheet.create({
   },
   productInfo: {
     paddingHorizontal: SPACING.md,
+  },
+  storeName: {
+    color: COLORS.primary,
+    fontWeight: '700',
+    marginBottom: SPACING.sm,
   },
   brandContainer: {
     flexDirection: 'row',

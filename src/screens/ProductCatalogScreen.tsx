@@ -194,6 +194,7 @@ const ProductCatalogScreen: React.FC<ProductCatalogScreenProps> = ({
         </View>
         
         <View style={styles.productInfo}>
+          <Text style={styles.storeName} numberOfLines={1}>{item.organization?.name || 'IHearVoices'}</Text>
           <Text style={styles.productBrand}>{item.brand}</Text>
           <Text style={styles.productName} numberOfLines={2}>{item.name}</Text>
           
@@ -581,6 +582,12 @@ const styles = StyleSheet.create({
   },
   productInfo: {
     padding: SPACING.sm,
+  },
+  storeName: {
+    color: COLORS.primary,
+    fontSize: 11,
+    fontWeight: '700',
+    marginBottom: 2,
   },
   productBrand: {
     fontSize: TYPOGRAPHY.fontSize.xs,

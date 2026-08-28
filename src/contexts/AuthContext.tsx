@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import { Session, User, AuthError } from '@supabase/supabase-js';
 import { supabase } from '../config/supabase';
+import MarketplaceService, { Organization } from '../services/marketplaceService';
 
 // Types
 interface Profile {
@@ -20,6 +21,7 @@ interface AuthContextType {
   // State
   user: User | null;
   profile: Profile | null;
+  organization: Organization | null;
   session: Session | null;
   loading: boolean;
   
@@ -29,9 +31,12 @@ interface AuthContextType {
   signOut: () => Promise<{ error: AuthError | null }>;
   resetPassword: (email: string) => Promise<{ error: AuthError | null }>;
   updateProfile: (updates: Partial<Profile>) => Promise<{ error: Error | null }>;
+  refreshAccount: () => Promise<void>;
   
   // Utility methods
   isAdmin: boolean;
+  isStoreOwner: boolean;
+  isCustomer: boolean;
   isAuthenticated: boolean;
 }
 
@@ -52,6 +57,7 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [organization, setOrganization] = useState<Organization | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const e2eWebAuthEnabled = Platform.OS === 'web' && process.env.EXPO_PUBLIC_E2E_AUTH === '1';
@@ -78,6 +84,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         created_at: now,
         updated_at: now,
       });
+      setOrganization(null);
       setLoading(false);
       return;
     }
@@ -106,6 +113,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         await fetchProfile(session.user.id);
       } else {
         setProfile(null);
+        setOrganization(null);
         setLoading(false);
       }
     });
@@ -135,12 +143,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
       } else {
         setProfile(data);
+        const ownedOrganization = await MarketplaceService.getOwnedOrganization(userId);
+        setOrganization(ownedOrganization);
       }
     } catch (error) {
       console.error('Error in fetchProfile:', error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const refreshAccount = async () => {
+    if (user?.id) await fetchProfile(user.id);
   };
 
   // Create user profile
@@ -304,12 +318,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Computed values
   const isAdmin = profile?.role === 'admin';
+  const isStoreOwner = !isAdmin && !!organization;
+  const isCustomer = !!profile && !isAdmin && !organization;
   const isAuthenticated = !!user && !!profile;
 
   const value: AuthContextType = {
     // State
     user,
     profile,
+    organization,
     session,
     loading,
     
@@ -319,9 +336,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     signOut,
     resetPassword,
     updateProfile,
+    refreshAccount,
     
     // Computed
     isAdmin,
+    isStoreOwner,
+    isCustomer,
     isAuthenticated,
   };
 

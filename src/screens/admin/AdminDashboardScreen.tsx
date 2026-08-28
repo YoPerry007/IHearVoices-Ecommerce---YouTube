@@ -23,6 +23,7 @@ interface AdminDashboardScreenProps {
   onNavigateToUsers: () => void;
   onNavigateToAnalytics: () => void;
   onNavigateToSettings: () => void;
+  onNavigateToStores: () => void;
   onNavigateBack: () => void;
 }
 
@@ -37,6 +38,7 @@ const AdminDashboardScreen: React.FC<AdminDashboardScreenProps> = ({
   onNavigateToUsers,
   onNavigateToAnalytics,
   onNavigateToSettings,
+  onNavigateToStores,
   onNavigateBack,
 }) => {
   const { user, profile, signOut } = useAuth();
@@ -127,6 +129,7 @@ const AdminDashboardScreen: React.FC<AdminDashboardScreenProps> = ({
   };
 
   const quickActions = [
+    { id: 'stores', title: 'Review Stores', icon: 'storefront-outline', color: COLORS.warning, onPress: onNavigateToStores },
     { id: 'products', title: 'Manage Products', icon: 'cube-outline', color: COLORS.primary, onPress: onNavigateToProducts },
     { id: 'orders', title: 'View Orders', icon: 'receipt-outline', color: COLORS.secondary, onPress: onNavigateToOrders },
     { id: 'users', title: 'Manage Users', icon: 'people-outline', color: COLORS.accent, onPress: onNavigateToUsers },

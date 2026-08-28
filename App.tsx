@@ -25,6 +25,8 @@ import OrderDetailsScreen from './src/screens/OrderDetailsScreen';
 import PrivacyPolicyScreen from './src/screens/PrivacyPolicyScreen';
 import TermsOfServiceScreen from './src/screens/TermsOfServiceScreen';
 import AIShoppingAssistantScreen from './src/screens/AIShoppingAssistantScreen';
+import SellerOnboardingScreen from './src/screens/SellerOnboardingScreen';
+import SellerDashboardScreen from './src/screens/seller/SellerDashboardScreen';
 
 // Import auth screens
 import LoginScreen from './src/screens/auth/LoginScreen';
@@ -38,11 +40,12 @@ import AdminOrdersScreen from './src/screens/admin/AdminOrdersScreen';
 import AdminUsersScreen from './src/screens/admin/AdminUsersScreen';
 import AdminAnalyticsScreen from './src/screens/admin/AdminAnalyticsScreen';
 import AdminSettingsScreen from './src/screens/admin/AdminSettingsScreen';
+import AdminStoresScreen from './src/screens/admin/AdminStoresScreen';
 
 import { COLORS } from './src/constants/theme';
 
-type Screen = 'home' | 'catalog' | 'assistant' | 'cart' | 'product-details' | 'profile' | 'checkout' | 'payment-result' | 'order-history' | 'order-details' | 'privacy-policy' | 'terms-of-service';
-type AdminScreen = 'dashboard' | 'products' | 'orders' | 'users' | 'analytics' | 'settings';
+type Screen = 'home' | 'catalog' | 'assistant' | 'cart' | 'product-details' | 'profile' | 'seller-application' | 'checkout' | 'payment-result' | 'order-history' | 'order-details' | 'privacy-policy' | 'terms-of-service';
+type AdminScreen = 'dashboard' | 'stores' | 'products' | 'orders' | 'users' | 'analytics' | 'settings';
 type AuthScreen = 'login' | 'register' | 'forgot-password';
 
 // Admin App Component
@@ -62,9 +65,12 @@ const AdminApp: React.FC<AdminAppProps> = ({ currentAdminScreen, setCurrentAdmin
             onNavigateToUsers={() => setCurrentAdminScreen('users')}
             onNavigateToAnalytics={() => setCurrentAdminScreen('analytics')}
             onNavigateToSettings={() => setCurrentAdminScreen('settings')}
+            onNavigateToStores={() => setCurrentAdminScreen('stores')}
             onNavigateBack={() => setCurrentAdminScreen('dashboard')}
           />
         );
+      case 'stores':
+        return <AdminStoresScreen onNavigateBack={() => setCurrentAdminScreen('dashboard')} />;
       case 'products':
         return (
           <AdminProductsScreen
@@ -103,6 +109,7 @@ const AdminApp: React.FC<AdminAppProps> = ({ currentAdminScreen, setCurrentAdmin
             onNavigateToUsers={() => setCurrentAdminScreen('users')}
             onNavigateToAnalytics={() => setCurrentAdminScreen('analytics')}
             onNavigateToSettings={() => setCurrentAdminScreen('settings')}
+            onNavigateToStores={() => setCurrentAdminScreen('stores')}
             onNavigateBack={() => setCurrentAdminScreen('dashboard')}
           />
         );
@@ -124,6 +131,14 @@ const AdminApp: React.FC<AdminAppProps> = ({ currentAdminScreen, setCurrentAdmin
           <Text style={[styles.tabLabel, currentAdminScreen === 'dashboard' && styles.tabLabelActive]}>
             Dashboard
           </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.tabItem, currentAdminScreen === 'stores' && styles.tabItemActive]}
+          onPress={() => setCurrentAdminScreen('stores')}
+        >
+          <Ionicons name={currentAdminScreen === 'stores' ? 'storefront' : 'storefront-outline'} size={24} color={currentAdminScreen === 'stores' ? COLORS.primary : COLORS.textMuted} />
+          <Text style={[styles.tabLabel, currentAdminScreen === 'stores' && styles.tabLabelActive]}>Stores</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -202,7 +217,7 @@ const AdminApp: React.FC<AdminAppProps> = ({ currentAdminScreen, setCurrentAdmin
 
 // Main App Component with Authentication Guards
 const AuthenticatedApp: React.FC = () => {
-  const { user, profile, loading, isAuthenticated, isAdmin } = useAuth();
+  const { user, profile, loading, isAuthenticated, isAdmin, isStoreOwner, isCustomer } = useAuth();
   const { clearCart, addToCart, refreshCart } = useCart();
   const [currentScreen, setCurrentScreen] = useState<Screen>('home');
   const [currentAdminScreen, setCurrentAdminScreen] = useState<AdminScreen>('dashboard');
@@ -288,6 +303,11 @@ const AuthenticatedApp: React.FC = () => {
   // Render admin interface if user is admin
   if (isAuthenticated && isAdmin) {
     return <AdminApp currentAdminScreen={currentAdminScreen} setCurrentAdminScreen={setCurrentAdminScreen} />;
+  }
+
+  // Owners stay in a tenant-scoped workspace; customer voice UI is never mounted.
+  if (isAuthenticated && isStoreOwner) {
+    return <SellerDashboardScreen />;
   }
 
   // Handle ML-powered voice commands
@@ -515,8 +535,11 @@ const AuthenticatedApp: React.FC = () => {
             }}
             onNavigateToPrivacyPolicy={() => setCurrentScreen('privacy-policy')}
             onNavigateToTermsOfService={() => setCurrentScreen('terms-of-service')}
+            onNavigateToSellerApplication={() => setCurrentScreen('seller-application')}
           />
         );
+      case 'seller-application':
+        return <SellerOnboardingScreen onNavigateBack={() => setCurrentScreen('profile')} />;
       case 'order-history':
         return (
           <OrderHistoryScreen
@@ -617,7 +640,7 @@ const AuthenticatedApp: React.FC = () => {
   const renderTabBar = () => {
     // Hide tab bar on product details, profile, checkout, payment result, order history, order details, privacy policy, and terms screens for better UX
     const hiddenScreens: Screen[] = ['product-details', 'profile', 'checkout', 'payment-result', 'order-history', 'order-details', 'privacy-policy', 'terms-of-service'];
-    if (hiddenScreens.includes(currentScreen)) {
+    if (!isCustomer || hiddenScreens.includes(currentScreen)) {
       return null;
     }
 
@@ -705,7 +728,7 @@ const AuthenticatedApp: React.FC = () => {
   const renderFloatingVoiceButton = () => {
     // Hide floating button on profile, product details, checkout, privacy policy, terms of service, order history, and order details screens
     const hiddenScreens = ['assistant', 'profile', 'product-details', 'checkout', 'privacy-policy', 'terms-of-service', 'order-history', 'order-details'];
-    if (hiddenScreens.includes(currentScreen)) {
+    if (!isCustomer || hiddenScreens.includes(currentScreen)) {
       return null;
     }
 

@@ -85,114 +85,29 @@ class OrderService {
    */
   static async createOrder(orderData: CreateOrderData): Promise<Order> {
     try {
-      console.log('Creating order for user:', orderData.user_id);
+      const { data: orderId, error: createError } = await supabase.rpc('create_marketplace_order', {
+        p_items: orderData.items,
+        p_shipping_address: orderData.shipping_address,
+        p_payment_reference: orderData.payment_reference || null,
+        p_payment_status: orderData.payment_status || 'pending',
+        p_notes: orderData.notes || null,
+      });
+      if (createError || !orderId) throw new Error(createError?.message || 'Marketplace order was not created');
 
-      // Start database transaction
-      const { data: order, error: orderError } = await supabase
+      const { data: order, error: fetchError } = await supabase
         .from('orders')
-        .insert({
-          user_id: orderData.user_id,
-          total_amount: orderData.total_amount,
-          status: orderData.status || 'pending',
-          payment_status: orderData.payment_status || 'pending',
-          shipping_address: JSON.stringify(orderData.shipping_address),
-          payment_reference: orderData.payment_reference,
-          notes: orderData.notes,
-        })
-        .select()
+        .select(`*, order_items(id,product_id,quantity,price,size,color,
+          products:product_id(id,name,description,images,brand))`)
+        .eq('id', orderId)
         .single();
+      if (fetchError || !order) throw new Error(fetchError?.message || 'Created order could not be loaded');
 
-      if (orderError) {
-        // Check if this is a duplicate payment reference error (expected behavior)
-        if (orderError.code === '23505' && orderError.message.includes('payment_reference')) {
-          console.log('🔄 Payment already processed, retrieving existing order...');
-          
-          // Try to find the existing order with this payment reference
-          if (orderData.payment_reference) {
-            const { data: existingOrder } = await supabase
-              .from('orders')
-              .select('*')
-              .eq('payment_reference', orderData.payment_reference)
-              .single();
-            
-            if (existingOrder) {
-              console.log('✅ Order already exists for this payment:', existingOrder.id);
-              return existingOrder;
-            }
-          }
-          
-          console.warn('⚠️ Could not find existing order for duplicate payment reference');
-        }
-        
-        // Only log as error for non-duplicate issues
-        console.error('❌ Order creation failed:', orderError);
-        throw new Error(`Failed to create order: ${orderError.message}`);
-      }
-
-      console.log('Order created successfully:', order.id);
-
-      // Get current prices for products and create order items
-      const orderItems: OrderItem[] = [];
-      
-      for (const item of orderData.items) {
-        // Get current product price
-        const { data: product, error: productError } = await supabase
-          .from('products')
-          .select('id, name, price, images, brand')
-          .eq('id', item.product_id)
-          .single();
-
-        if (productError) {
-          console.error('Product not found:', item.product_id, productError);
-          throw new Error(`Product not found: ${item.product_id}`);
-        }
-
-        // Create order item with current price
-        const { error: itemError } = await supabase
-          .from('order_items')
-          .insert({
-            order_id: order.id,
-            product_id: item.product_id,
-            quantity: item.quantity,
-            price: product.price, // Use current product price
-            size: item.size,
-            color: item.color,
-          });
-
-        if (itemError) {
-          console.error('Order item creation failed:', itemError);
-          
-          // Rollback: Delete the order if item creation fails
-          await supabase.from('orders').delete().eq('id', order.id);
-          
-          throw new Error(`Failed to create order item: ${itemError.message}`);
-        }
-
-        orderItems.push({
-          product_id: item.product_id,
-          quantity: item.quantity,
-          price: product.price,
-          size: item.size,
-          color: item.color,
-          product: {
-            id: product.id,
-            name: product.name,
-            description: '', // Not needed for order item
-            images: product.images,
-            brand: product.brand,
-          },
-        });
-      }
-
-      console.log(`Order ${order.id} created with ${orderItems.length} items`);
-
-      // Return complete order with items
       return {
         ...order,
-        shipping_address: JSON.parse(order.shipping_address),
-        items: orderItems,
-        item_count: orderItems.length,
-      };
+        shipping_address: typeof order.shipping_address === 'string' ? JSON.parse(order.shipping_address) : order.shipping_address,
+        items: (order.order_items || []).map((item: any) => ({ ...item, product: item.products })),
+        item_count: order.order_items?.length || 0,
+      } as Order;
 
     } catch (error) {
       console.error('Order creation error:', error);

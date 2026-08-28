@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { AdminService } from '../services/adminService';
+import MarketplaceService from '../services/marketplaceService';
 
 export interface Product {
   id: string;
@@ -17,6 +17,9 @@ export interface Product {
   discount_percentage: number;
   rating: number;
   review_count: number;
+  organization_id: string;
+  status: 'draft' | 'published' | 'archived';
+  organization?: { id: string; name: string; slug: string; logo_url: string | null; status: string } | null;
   created_at: string;
   updated_at: string;
 }
@@ -34,7 +37,7 @@ export const useProducts = () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await AdminService.getAllProducts();
+      const data = await MarketplaceService.getMarketplaceProducts() as Product[];
       setProducts(data);
     } catch (err) {
       setError('Failed to load products');
@@ -49,7 +52,7 @@ export const useProducts = () => {
     try {
       setLoading(true);
       setError(null);
-      const allProducts = await AdminService.getAllProducts();
+      const allProducts = await MarketplaceService.getMarketplaceProducts() as Product[];
       
       if (category && category !== 'all') {
         const filtered = allProducts.filter(product => 
@@ -72,7 +75,7 @@ export const useProducts = () => {
   const getFeaturedProducts = useCallback(async () => {
     try {
       setError(null);
-      const allProducts = await AdminService.getAllProducts();
+      const allProducts = await MarketplaceService.getMarketplaceProducts() as Product[];
       const featured = allProducts
         .filter(product => product.in_stock && product.rating >= 4)
         .sort((a, b) => b.rating - a.rating)
@@ -92,7 +95,7 @@ export const useProducts = () => {
     try {
       setLoading(true);
       setError(null);
-      const allProducts = await AdminService.getAllProducts();
+      const allProducts = await MarketplaceService.getMarketplaceProducts() as Product[];
       
       const searchResults = allProducts.filter(product =>
         product.in_stock && (
@@ -116,7 +119,7 @@ export const useProducts = () => {
   const getProductById = useCallback(async (productId: string) => {
     try {
       setError(null);
-      const allProducts = await AdminService.getAllProducts();
+      const allProducts = await MarketplaceService.getMarketplaceProducts() as Product[];
       return allProducts.find(product => product.id === productId) || null;
     } catch (err) {
       setError('Failed to load product');
