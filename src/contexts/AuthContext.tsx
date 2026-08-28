@@ -248,11 +248,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const signOut = async () => {
     try {
       setLoading(true);
-      const { error } = await supabase.auth.signOut();
+      // Account switching only needs to revoke the session on this device.
+      // A global revoke can fail when offline or when another session has
+      // already expired, leaving the local app apparently signed in.
+      const { error } = await supabase.auth.signOut({ scope: 'local' });
       return { error };
     } catch (error) {
       return { error: error as AuthError };
     } finally {
+      // Clear React state even if the network/auth endpoint is unavailable.
+      // The local scope call also removes the persisted SecureStore session.
+      setSession(null);
+      setUser(null);
+      setProfile(null);
+      setOrganization(null);
+      setPasswordRecovery(false);
       setLoading(false);
     }
   };
