@@ -179,14 +179,29 @@ export class MarketplaceService {
   }
 
   static async getOwnerOrders(organizationId: string) {
-    const { data, error } = await supabase
+    // Fetch orders with their items (but NOT profiles via the FK hint,
+    // because seller_orders.customer_id references auth.users, not profiles).
+    const { data: orders, error } = await supabase
       .from('seller_orders')
-      .select(`*, customer:profiles!seller_orders_customer_id_fkey(full_name,email),
+      .select(`*,
         order_items(id,quantity,price,size,color,products:product_id(name,images))`)
       .eq('organization_id', organizationId)
       .order('created_at', { ascending: false });
     if (error) throw error;
-    return data || [];
+    if (!orders || orders.length === 0) return [];
+
+    // Enrich with customer profile info in a separate query.
+    const customerIds = [...new Set(orders.map((o: any) => o.customer_id))];
+    const { data: profiles } = await supabase
+      .from('profiles')
+      .select('id,full_name,email')
+      .in('id', customerIds);
+    const profileMap = new Map((profiles || []).map((p: any) => [p.id, p]));
+
+    return orders.map((order: any) => ({
+      ...order,
+      customer: profileMap.get(order.customer_id) || null,
+    }));
   }
 
   static async updateSellerOrderStatus(orderId: string, status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled') {
