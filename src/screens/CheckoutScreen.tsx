@@ -22,7 +22,9 @@ import {
   ActivityIndicator,
   TextInput,
   Modal,
+  Platform,
 } from 'react-native';
+import { WebView } from 'react-native-webview';
 import { StatusBar } from 'expo-status-bar';
 import * as WebBrowser from 'expo-web-browser';
 import { Ionicons } from '@expo/vector-icons';
@@ -55,6 +57,10 @@ const CheckoutScreen: React.FC<CheckoutScreenProps> = ({ navigation }) => {
   const [orderCreated, setOrderCreated] = useState<boolean>(false);
   const orderCreatedRef = useRef<boolean>(false);
   const [processedPayments, setProcessedPayments] = useState<Set<string>>(new Set());
+  const [showPaymentModal, setShowPaymentModal] = useState<boolean>(false);
+  const [paymentUrl, setPaymentUrl] = useState<string>('');
+  const [isVerifying, setIsVerifying] = useState<boolean>(false);
+  const monitorIntervalRef = useRef<any>(null);
   
   // Shipping form state
   const [shippingForm, setShippingForm] = useState<ShippingAddress>({
@@ -188,13 +194,14 @@ const CheckoutScreen: React.FC<CheckoutScreenProps> = ({ navigation }) => {
         // Payment completed successfully - create order immediately
         await createOrderAfterPayment(paymentResult.reference, paymentResult.transaction_id || '');
       } else if (paymentResult.authorization_url) {
-        // All payments (Card/Mobile Money) - open in-app browser
-        console.log('Opening in-app payment browser');
+        console.log('Opening Paystack in-app payment interface');
         console.log('Payment URL:', paymentResult.authorization_url);
         console.log('Reference:', reference);
         
         setCurrentPaymentReference(reference);
-        await handleWebBrowserPayment(paymentResult.authorization_url, reference);
+        setPaymentUrl(paymentResult.authorization_url);
+        setShowPaymentModal(true);
+        startPaymentMonitoring(reference);
         return;
       } else {
         throw new Error(paymentResult.message || 'Payment failed');
@@ -467,120 +474,112 @@ const CheckoutScreen: React.FC<CheckoutScreenProps> = ({ navigation }) => {
   );
 
 
-  // Handle WebBrowser payment with automatic detection
-  const handleWebBrowserPayment = async (url: string, paymentReference: string) => {
-    try {
-      console.log('Opening WebBrowser for payment');
-      console.log('Using payment reference:', paymentReference);
-      
-      // Start payment monitoring with the correct reference
-      const paymentMonitor = startPaymentMonitoring(paymentReference);
-      
-      // Configure WebBrowser
-      WebBrowser.maybeCompleteAuthSession();
-      
-      const result = await WebBrowser.openBrowserAsync(url, {
-        presentationStyle: WebBrowser.WebBrowserPresentationStyle.FORM_SHEET,
-        showTitle: true,
-        toolbarColor: COLORS.primary,
-        controlsColor: COLORS.white,
-        enableBarCollapsing: false,
-      });
-      
-      console.log('WebBrowser result:', result);
-      
-      if (result.type === 'opened') {
-        // This happens on Android when Expo cannot open an embedded Custom Tab
-        // and instead launches an external browser app. The method returns immediately.
-        console.log('Browser launched externally and returned "opened" immediately.');
-        console.log('Leaving payment monitor running in background...');
-        
-        // We unlock the checkout button so the user can try again if they cancel outside
-        setIsProcessing(false);
-        return;
+  // Cleanup interval on unmount
+  useEffect(() => {
+    return () => {
+      if (monitorIntervalRef.current) {
+        clearInterval(monitorIntervalRef.current);
       }
-      
-      console.log('Browser closed, checking final payment status...');
-      
-      // Stop monitoring interval
-      clearInterval(paymentMonitor);
-      
-      // If order was already created by the monitor, skip final check
-      if (orderCreatedRef.current || processedPayments.has(paymentReference)) {
-        console.log('✅ Order already created by monitor, skipping final check');
-        return;
-      }
-      
-      // Final verification with retries — catches payments completed just before close
-      console.log('🔄 Running final payment verification (3 retries, 2s apart)...');
-      
-      for (let attempt = 1; attempt <= 3; attempt++) {
-        try {
-          // Small delay to let Paystack finalize
-          await new Promise(resolve => setTimeout(resolve, 2000));
-          
-          console.log(`🔍 Final verification attempt ${attempt}/3 for ${paymentReference}`);
-          const verification = await PaymentService.verifyPayment(paymentReference);
-          
-          if (verification.success && verification.status === 'success') {
-            console.log('🎉 Payment confirmed on final verification!');
-            await createOrderAfterPayment(paymentReference, verification.transaction_id);
-            return;
-          }
-          
-          console.log(`Payment status: ${verification.status} (attempt ${attempt})`);
-          
-        } catch (error) {
-          console.log(`Final check attempt ${attempt} error:`, error instanceof Error ? error.message : String(error));
+    };
+  }, []);
+
+  // Handle in-app WebView URL changes for Paystack redirect callbacks
+  const handleWebViewNavigationStateChange = async (navState: any) => {
+    const { url } = navState;
+    console.log('Paystack WebView URL change:', url);
+
+    if (
+      url.includes('trxref=') ||
+      url.includes('reference=') ||
+      url.includes('callback') ||
+      url.includes('standard/redirect') ||
+      url.includes('ihearvoices://') ||
+      url.includes('payment/success')
+    ) {
+      console.log('🎉 Payment callback detected in WebView, verifying...');
+      setIsVerifying(true);
+      try {
+        const verification = await PaymentService.verifyPayment(currentPaymentReference);
+        if (verification.success && verification.status === 'success') {
+          if (monitorIntervalRef.current) clearInterval(monitorIntervalRef.current);
+          setShowPaymentModal(false);
+          setIsProcessing(false);
+          await createOrderAfterPayment(currentPaymentReference, verification.transaction_id);
+          return;
         }
+      } catch (err) {
+        console.warn('WebView callback verification error:', err);
+      } finally {
+        setIsVerifying(false);
       }
-      
-      // After all retries, payment was not detected as successful
-      console.log('⚠️ Payment not confirmed after browser close and retries');
-      setIsProcessing(false);
-      
-      Alert.alert(
-        'Payment Status Unknown',
-        'We could not confirm your payment. If you completed the payment, your order will be processed shortly. You can check your order status in your profile.',
-        [
-          {
-            text: 'Check Again',
-            onPress: async () => {
-              setIsProcessing(true);
-              try {
-                const verification = await PaymentService.verifyPayment(paymentReference);
-                if (verification.success && verification.status === 'success') {
-                  await createOrderAfterPayment(paymentReference, verification.transaction_id);
-                } else {
-                  setIsProcessing(false);
-                  Alert.alert('Payment Pending', 'Payment has not been completed yet. Please try again.');
-                }
-              } catch (err) {
-                setIsProcessing(false);
-                Alert.alert('Error', 'Could not verify payment. Please try again later.');
-              }
-            },
-          },
-          {
-            text: 'Go Back',
-            style: 'cancel',
-            onPress: () => setIsProcessing(false),
-          },
-        ]
-      );
-      
-    } catch (error) {
-      console.error('WebBrowser payment error:', error);
-      setIsProcessing(false);
-      Alert.alert('Error', 'Failed to open payment browser. Please try again.');
     }
   };
 
-  // Start monitoring payment status while browser is open
+  // User manually taps Done on the Paystack modal
+  const handleVerifyAndClose = async () => {
+    setIsVerifying(true);
+    try {
+      console.log(`Checking payment verification for ${currentPaymentReference}`);
+      const verification = await PaymentService.verifyPayment(currentPaymentReference);
+      if (verification.success && verification.status === 'success') {
+        if (monitorIntervalRef.current) clearInterval(monitorIntervalRef.current);
+        setShowPaymentModal(false);
+        setIsProcessing(false);
+        await createOrderAfterPayment(currentPaymentReference, verification.transaction_id);
+      } else {
+        Alert.alert(
+          'Payment Pending',
+          'Payment confirmation has not been received yet. If you have already completed payment on the card/mobile money prompt, wait a few seconds and tap Done again.',
+          [
+            { text: 'Keep Waiting', style: 'cancel' },
+            {
+              text: 'Close Window',
+              style: 'destructive',
+              onPress: () => {
+                if (monitorIntervalRef.current) clearInterval(monitorIntervalRef.current);
+                setShowPaymentModal(false);
+                setIsProcessing(false);
+              },
+            },
+          ]
+        );
+      }
+    } catch (err) {
+      Alert.alert('Verification', 'Could not verify payment yet. Please complete the payment in the prompt.');
+    } finally {
+      setIsVerifying(false);
+    }
+  };
+
+  // User requests closing the payment modal
+  const handleClosePaymentModal = () => {
+    Alert.alert(
+      'Cancel Payment?',
+      'Are you sure you want to close the payment screen?',
+      [
+        { text: 'Continue Payment', style: 'cancel' },
+        {
+          text: 'Close',
+          style: 'destructive',
+          onPress: () => {
+            if (monitorIntervalRef.current) clearInterval(monitorIntervalRef.current);
+            setShowPaymentModal(false);
+            setIsProcessing(false);
+          },
+        },
+      ]
+    );
+  };
+
+  // Start monitoring payment status while payment is open
   const startPaymentMonitoring = (reference: string) => {
     let checkCount = 0;
     const maxChecks = 60; // Check for 5 minutes (every 5 seconds)
     
+    if (monitorIntervalRef.current) {
+      clearInterval(monitorIntervalRef.current);
+    }
+
     console.log('Starting payment monitoring for:', reference);
     
     const monitor = setInterval(async () => {
@@ -593,16 +592,18 @@ const CheckoutScreen: React.FC<CheckoutScreenProps> = ({ navigation }) => {
         if (verification.success && verification.status === 'success') {
           console.log('🎉 Payment detected as successful! Auto-completing...');
           clearInterval(monitor);
+          monitorIntervalRef.current = null;
+          setShowPaymentModal(false);
+          setIsProcessing(false);
           
-          // Create order and close browser
           await createOrderAfterPayment(reference, verification.transaction_id);
-          WebBrowser.dismissBrowser();
           return;
         }
         
         if (checkCount >= maxChecks) {
           console.log('Payment monitoring timeout reached');
           clearInterval(monitor);
+          monitorIntervalRef.current = null;
         }
         
       } catch (error) {
@@ -610,6 +611,7 @@ const CheckoutScreen: React.FC<CheckoutScreenProps> = ({ navigation }) => {
       }
     }, 5000); // Check every 5 seconds
     
+    monitorIntervalRef.current = monitor;
     return monitor;
   };
 
@@ -743,6 +745,65 @@ const CheckoutScreen: React.FC<CheckoutScreenProps> = ({ navigation }) => {
           </TouchableOpacity>
         </LinearGradient>
       </View>
+
+      {/* Paystack In-App Payment Modal */}
+      <Modal
+        visible={showPaymentModal}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={handleClosePaymentModal}
+      >
+        <SafeAreaView style={styles.modalContainer}>
+          <View style={styles.modalHeader}>
+            <TouchableOpacity
+              onPress={handleClosePaymentModal}
+              style={styles.modalCloseButton}
+            >
+              <Ionicons name="close" size={24} color={COLORS.textPrimary} />
+            </TouchableOpacity>
+            <Text style={styles.modalTitle}>Paystack Secure Payment</Text>
+            <TouchableOpacity
+              onPress={handleVerifyAndClose}
+              disabled={isVerifying}
+              style={styles.modalDoneButton}
+            >
+              {isVerifying ? (
+                <ActivityIndicator size="small" color={COLORS.primary} />
+              ) : (
+                <Text style={styles.modalDoneText}>Done</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+
+          {paymentUrl ? (
+            Platform.OS === 'web' ? (
+              <View style={styles.webFrameContainer}>
+                {/* On web, rendered as iframe */}
+                <iframe
+                  src={paymentUrl}
+                  style={{ width: '100%', height: '100%', border: 'none' }}
+                  title="Paystack Payment"
+                />
+              </View>
+            ) : (
+              <WebView
+                source={{ uri: paymentUrl }}
+                style={styles.webview}
+                startInLoadingState={true}
+                renderLoading={() => (
+                  <View style={styles.webviewLoading}>
+                    <ActivityIndicator size="large" color={COLORS.primary} />
+                    <Text style={styles.webviewLoadingText}>Loading Paystack payment card...</Text>
+                  </View>
+                )}
+                onNavigationStateChange={handleWebViewNavigationStateChange}
+                javaScriptEnabled={true}
+                domStorageEnabled={true}
+              />
+            )
+          ) : null}
+        </SafeAreaView>
+      </Modal>
 
     </SafeAreaView>
   );
@@ -991,6 +1052,57 @@ const styles = StyleSheet.create({
     color: COLORS.warning,
     fontWeight: '500',
     flex: 1,
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: COLORS.background,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
+    backgroundColor: COLORS.surface,
+  },
+  modalCloseButton: {
+    padding: SPACING.xs,
+  },
+  modalTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: COLORS.textPrimary,
+  },
+  modalDoneButton: {
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: SPACING.xs,
+  },
+  modalDoneText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: COLORS.primary,
+  },
+  webFrameContainer: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
+  webview: {
+    flex: 1,
+    backgroundColor: COLORS.background,
+  },
+  webviewLoading: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.background,
+    gap: SPACING.sm,
+  },
+  webviewLoadingText: {
+    fontSize: 14,
+    color: COLORS.textSecondary,
   },
 });
 

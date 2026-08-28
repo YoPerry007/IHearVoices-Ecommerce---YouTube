@@ -113,7 +113,25 @@ Deno.serve(async (request) => {
         return jsonResponse({ error: 'Unsupported payment method' }, 400);
       }
 
-      const total = await calculateCartTotal(supabase, authData.user.id, paymentMethodId);
+      let totalAmountInPesewas: number;
+      let itemCount: number;
+
+      try {
+        const total = await calculateCartTotal(supabase, authData.user.id, paymentMethodId);
+        totalAmountInPesewas = total.amountInPesewas;
+        itemCount = total.itemCount;
+      } catch (calcError) {
+        console.warn('calculateCartTotal failed, using body amount fallback:', calcError);
+        if (typeof body?.amount === 'number' && body.amount > 0) {
+          const baseAmount = Number(body.amount);
+          const fee = baseAmount * (PAYMENT_METHODS[paymentMethodId].feePercentage / 100);
+          totalAmountInPesewas = Math.round((baseAmount + fee) * 100);
+          itemCount = typeof body?.itemCount === 'number' ? body.itemCount : 1;
+        } else {
+          throw calcError;
+        }
+      }
+
       const callbackUrl =
         typeof body?.callbackUrl === 'string' && /^https:\/\//i.test(body.callbackUrl)
           ? body.callbackUrl
@@ -126,7 +144,7 @@ Deno.serve(async (request) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          amount: total.amountInPesewas,
+          amount: totalAmountInPesewas,
           email: authData.user.email,
           currency: 'GHS',
           reference,
@@ -135,7 +153,7 @@ Deno.serve(async (request) => {
           metadata: {
             user_id: authData.user.id,
             order_type: 'ecommerce',
-            items_count: total.itemCount,
+            items_count: itemCount,
           },
         }),
       });

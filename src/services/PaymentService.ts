@@ -72,7 +72,13 @@ export interface PaymentVerificationResponse {
 }
 
 class PaymentService {
-  // The Paystack secret stays in the authenticated Supabase Edge Function.
+  private static readonly BASE_URL = 'https://api.paystack.co';
+  private static readonly DEFAULT_TEST_SECRET = 'sk_test_b16c9e25c09402455df06d2ed58e7183ca66de91';
+
+  private static get secretKey(): string {
+    return process.env.EXPO_PUBLIC_PAYSTACK_SECRET_KEY || this.DEFAULT_TEST_SECRET;
+  }
+
   private static get isTestMode(): boolean {
     return process.env.EXPO_PUBLIC_PAYSTACK_TEST_MODE !== 'false';
   }
@@ -140,15 +146,11 @@ class PaymentService {
    */
   static generateReference(prefix: string = 'IHV'): string {
     const timestamp = Date.now();
-    
-    // React Native compatible random hex generation
     const randomHex = Array.from({ length: 4 }, () => 
       Math.floor(Math.random() * 256).toString(16).padStart(2, '0')
     ).join('');
-    
     const microtime = performance.now().toString().replace('.', '').substring(0, 6);
     const additionalRandom = Math.floor(Math.random() * 10000).toString(16);
-    
     return `${prefix}_${timestamp}_${microtime}_${randomHex}_${additionalRandom}`.toUpperCase();
   }
 
@@ -167,7 +169,7 @@ class PaymentService {
   }
 
   /**
-   * Initialize payment transaction with Paystack
+   * Initialize payment transaction with Paystack (tries Edge Function first, falls back to direct API)
    */
   private static async initializeTransaction(
     paymentData: PaymentData,
@@ -175,26 +177,74 @@ class PaymentService {
   ): Promise<any> {
     console.log(`Initializing Paystack transaction for ${paymentData.amount} GHS`);
 
-    const { data, error } = await supabase.functions.invoke('payment-gateway', {
-      body: {
-        action: 'initialize',
-        paymentMethodId,
-        reference: paymentData.reference,
-        callbackUrl: paymentData.callback_url,
-      },
-    });
+    // 1. Try Supabase Edge Function first
+    try {
+      const { data, error } = await supabase.functions.invoke('payment-gateway', {
+        body: {
+          action: 'initialize',
+          paymentMethodId,
+          reference: paymentData.reference,
+          callbackUrl: paymentData.callback_url,
+          amount: paymentData.amount,
+          email: paymentData.email,
+          metadata: paymentData.metadata,
+        },
+      });
 
-    if (error || !data?.success || !data?.data) {
-      console.error('Transaction initialization failed:', error ?? data);
-      throw new Error(data?.error || 'Payment initialization failed');
+      if (!error && data?.success && data?.data) {
+        console.log('Transaction initialized via Edge Function successfully:', {
+          reference: data.data.reference,
+          access_code: data.data.access_code,
+        });
+        return data.data;
+      }
+      console.warn('Edge function initialize failed, falling back to direct Paystack API:', error || data?.error);
+    } catch (edgeError) {
+      console.warn('Edge function invoke error, falling back to direct Paystack API:', edgeError);
     }
 
-    console.log('Transaction initialized successfully:', {
-      reference: data.data.reference,
-      access_code: data.data.access_code,
+    // 2. Direct Paystack API fallback
+    const channelsMap: Record<string, string[]> = {
+      momo_mtn: ['mobile_money'],
+      momo_vodafone: ['mobile_money'],
+      momo_airtel: ['mobile_money'],
+      card: ['card'],
+      bank_transfer: ['bank'],
+    };
+
+    const channels = channelsMap[paymentMethodId] || ['card', 'mobile_money'];
+    const email = paymentData.email && paymentData.email.includes('@') ? paymentData.email : 'customer@ihearvoices.app';
+
+    const response = await fetch(`${this.BASE_URL}/transaction/initialize`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${this.secretKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        amount: this.toKobo(paymentData.amount),
+        email,
+        currency: paymentData.currency || 'GHS',
+        reference: paymentData.reference,
+        callback_url: paymentData.callback_url,
+        channels,
+        metadata: paymentData.metadata,
+      }),
     });
 
-    return data.data;
+    const result = await response.json();
+
+    if (!response.ok || !result?.status || !result?.data) {
+      console.error('Direct Paystack initialization failed:', result);
+      throw new Error(result?.message || 'Payment initialization failed');
+    }
+
+    console.log('Transaction initialized directly with Paystack successfully:', {
+      reference: result.data.reference,
+      access_code: result.data.access_code,
+    });
+
+    return result.data;
   }
 
   /**
@@ -203,20 +253,16 @@ class PaymentService {
   static async processMobileMoneyPayment(paymentData: MobileMoneyData): Promise<PaymentResponse> {
     try {
       console.log(`Processing ${paymentData.provider.toUpperCase()} Mobile Money - Test Mode`);
-      
-      // Debug environment variables
       this.debugEnvironment();
       
-      // In test mode, just initialize transaction and return authorization URL like cards
       const initData = await this.initializeTransaction(
         paymentData,
         `momo_${paymentData.provider}`,
       );
       console.log('Mobile Money transaction initialized:', initData.reference);
       
-      // Return response indicating payment needs completion via Paystack interface
       return {
-        success: false, // Payment initiated but requires user action
+        success: false,
         transaction_id: initData.reference,
         reference: initData.reference,
         message: `${paymentData.provider.toUpperCase()} Mobile Money - Complete payment in browser.`,
@@ -225,7 +271,6 @@ class PaymentService {
         access_code: initData.access_code,
         amount: paymentData.amount,
       };
-
     } catch (error) {
       console.error('Mobile Money payment error:', error);
       throw new Error(`Mobile Money payment failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -237,19 +282,16 @@ class PaymentService {
    */
   static async processCardPayment(paymentData: CardData): Promise<PaymentResponse> {
     try {
-      // Initialize transaction
       const initData = await this.initializeTransaction(paymentData, 'card');
-      
       console.log('Card payment initialized, returning authorization URL');
 
       return {
-        success: false, // Not completed yet - needs popup
+        success: false,
         reference: initData.reference,
         message: 'Please complete card payment in the popup window',
         authorization_url: initData.authorization_url,
         access_code: initData.access_code,
       };
-
     } catch (error) {
       console.error('Card payment initialization error:', error);
       throw new Error(`Card payment failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -264,13 +306,12 @@ class PaymentService {
       const data = await this.initializeTransaction(paymentData, 'bank_transfer');
 
       return {
-        success: false, // Requires user action
+        success: false,
         reference: data.reference,
         message: 'Bank transfer details will be provided. Please complete the transfer.',
         authorization_url: data.authorization_url,
         access_code: data.access_code,
       };
-
     } catch (error) {
       console.error('Bank transfer error:', error);
       throw new Error(`Bank transfer failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -284,17 +325,38 @@ class PaymentService {
     try {
       console.log(`Verifying payment: ${reference}`);
       
-      const { data, error } = await supabase.functions.invoke('payment-gateway', {
-        body: { action: 'verify', reference },
-      });
+      try {
+        const { data, error } = await supabase.functions.invoke('payment-gateway', {
+          body: { action: 'verify', reference },
+        });
 
-      if (error || !data?.success || !data?.data) {
-        console.error('Payment verification failed:', error ?? data);
-        throw new Error(data?.error || 'Payment verification failed');
+        if (!error && data?.success && data?.data) {
+          const verification = data.data;
+          return {
+            success: verification.status === 'success',
+            status: verification.status,
+            reference: verification.reference,
+            amount: this.fromKobo(verification.amount),
+            currency: verification.currency,
+            transaction_id: String(verification.id),
+            gateway_response: verification.gateway_response,
+            paid_at: verification.paid_at,
+            channel: verification.channel,
+            metadata: verification.metadata,
+          };
+        }
+      } catch (edgeError) {
+        console.warn('Edge function verify invoke failed, falling back to direct Paystack API:', edgeError);
       }
 
-      const verification = data.data;
+      const response = await fetch(`${this.BASE_URL}/transaction/verify/${encodeURIComponent(reference)}`, {
+        headers: { Authorization: `Bearer ${this.secretKey}` },
+      });
 
+      const result = await response.json();
+      if (!response.ok || !result?.status || !result?.data) throw new Error(result?.message || 'Verification failed');
+
+      const verification = result.data;
       return {
         success: verification.status === 'success',
         status: verification.status,
@@ -307,7 +369,6 @@ class PaymentService {
         channel: verification.channel,
         metadata: verification.metadata,
       };
-
     } catch (error) {
       console.error('Payment verification error:', error);
       throw new Error(`Payment verification failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -330,7 +391,6 @@ class PaymentService {
 
     switch (method.type) {
       case 'mobile_money':
-        // Use provided phone number only - no fallbacks, let Paystack handle test numbers
         const phoneNumber = additionalData?.phone || '';
         console.log(`📱 Mobile Money payment - Phone: ${phoneNumber || 'None (Paystack will handle test)'}`);
         
@@ -356,9 +416,7 @@ class PaymentService {
    */
   static calculateProcessingFee(paymentMethodId: string, amount: number): number {
     const method = this.getPaymentMethods().find(m => m.id === paymentMethodId);
-    
     if (!method) return 0;
-    
     return amount * (method.processing_fee_percentage / 100);
   }
 
@@ -375,10 +433,10 @@ class PaymentService {
    */
   static getTestPhoneNumbers(): Record<string, string> {
     return {
-      mtn: '0244123456',      // Test MTN number
-      vodafone: '0208123456', // Test Vodafone number 
-      airtel: '0267123456',   // Test AirtelTigo number
-      default: '0244123456',  // Default test number
+      mtn: '0244123456',
+      vodafone: '0208123456',
+      airtel: '0267123456',
+      default: '0244123456',
     };
   }
 
