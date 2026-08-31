@@ -1,0 +1,4084 @@
+{
+  "notice": "Synthetic form testing. Latest owner revision: send 17 more from the confirmed count of 38, stopping at 55 total. The in-progress batch 039–044 counts toward those 17. IDs 056–082 are cancelled drafts and must not be submitted.",
+  "finalResponseCap": 55,
+  "cancelledDraftIds": [
+    56,
+    57,
+    58,
+    59,
+    60,
+    61,
+    62,
+    63,
+    64,
+    65,
+    66,
+    67,
+    68,
+    69,
+    70,
+    71,
+    72,
+    73,
+    74,
+    75,
+    76,
+    77,
+    78,
+    79,
+    80,
+    81,
+    82
+  ],
+  "profiles": [
+    {
+      "id": 1,
+      "gender": "Female",
+      "education": "DEGREE",
+      "age": "25-30",
+      "experience": "Below 5 years",
+      "department": "SYNTHETIC TEST 001 — Procurement",
+      "position": "Procurement Officer (test persona)",
+      "B": [
+        4,
+        4,
+        5,
+        4,
+        3,
+        3,
+        2
+      ],
+      "C": [
+        4,
+        3,
+        5,
+        4,
+        3,
+        4,
+        2,
+        5,
+        3
+      ],
+      "D": [
+        4,
+        5,
+        3,
+        4,
+        4,
+        5,
+        4,
+        3,
+        4
+      ],
+      "challenges": [
+        "Insufficient Infrastructure",
+        "Lack of trust"
+      ],
+      "challenging": "Yes",
+      "benefits": [
+        "Reduced paper work",
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 2,
+      "gender": "Male",
+      "education": "HND",
+      "age": "25-30",
+      "experience": "Below 5 years",
+      "department": "SYNTHETIC TEST 002 — Planning",
+      "position": "Planning Officer (test persona)",
+      "B": [
+        3,
+        1,
+        2,
+        1,
+        1,
+        2,
+        2
+      ],
+      "C": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "D": [
+        1,
+        3,
+        3,
+        3,
+        2,
+        2,
+        3,
+        1,
+        2
+      ],
+      "challenges": [
+        ". Lack of supplier commitment"
+      ],
+      "challenging": "NO",
+      "benefits": [
+        "Lowers transaction cost",
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 3,
+      "gender": "Female",
+      "education": "HND",
+      "age": "31-40",
+      "experience": "5-10 years",
+      "department": "SYNTHETIC TEST 003 — Works",
+      "position": "Works Officer (test persona)",
+      "B": [
+        3,
+        2,
+        2,
+        3,
+        3,
+        2,
+        4
+      ],
+      "C": [
+        5,
+        3,
+        4,
+        4,
+        4,
+        5,
+        5,
+        4,
+        4
+      ],
+      "D": [
+        3,
+        3,
+        4,
+        3,
+        3,
+        3,
+        3,
+        2,
+        3
+      ],
+      "challenges": [
+        "Insufficient Infrastructure",
+        ". Lack of supplier commitment",
+        "Lack of trust",
+        "Poor alignment of organizational culture"
+      ],
+      "challenging": "Yes",
+      "benefits": [
+        "Lowers transaction cost",
+        "Reduced paper work",
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 4,
+      "gender": "Male",
+      "education": "HND",
+      "age": "40 and Above",
+      "experience": "5-10 years",
+      "department": "SYNTHETIC TEST 004 — Finance",
+      "position": "Accounts Officer (test persona)",
+      "B": [
+        4,
+        4,
+        4,
+        5,
+        3,
+        3,
+        3
+      ],
+      "C": [
+        3,
+        2,
+        3,
+        2,
+        3,
+        3,
+        2,
+        1,
+        2
+      ],
+      "D": [
+        5,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4
+      ],
+      "challenges": [
+        ". Lack of supplier commitment",
+        "Lack of trust"
+      ],
+      "challenging": "NO",
+      "benefits": [
+        "Lowers transaction cost",
+        "Reduced paper work",
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 5,
+      "gender": "Female",
+      "education": "HND",
+      "age": "20-24",
+      "experience": "Below 5 years",
+      "department": "SYNTHETIC TEST 005 — IT",
+      "position": "IT Support Officer (test persona)",
+      "B": [
+        5,
+        5,
+        5,
+        4,
+        5,
+        5,
+        5
+      ],
+      "C": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5
+      ],
+      "D": [
+        5,
+        5,
+        5,
+        5,
+        4,
+        5,
+        5,
+        5,
+        5
+      ],
+      "challenges": [
+        "Insufficient Infrastructure",
+        ". Lack of supplier commitment",
+        "Lack of trust",
+        "Poor alignment of organizational culture"
+      ],
+      "challenging": "Yes",
+      "benefits": [
+        "Lowers transaction cost",
+        "Reduced paper work",
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 6,
+      "gender": "Male",
+      "education": "DEGREE",
+      "age": "25-30",
+      "experience": "Below 5 years",
+      "department": "SYNTHETIC TEST 006 — Administration",
+      "position": "Administrative Officer (test persona)",
+      "B": [
+        1,
+        1,
+        2,
+        1,
+        1,
+        1,
+        1
+      ],
+      "C": [
+        2,
+        3,
+        2,
+        2,
+        3,
+        3,
+        4,
+        3,
+        3
+      ],
+      "D": [
+        1,
+        2,
+        1,
+        2,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "challenges": [
+        "Insufficient Infrastructure",
+        ". Lack of supplier commitment",
+        "Lack of trust",
+        "Poor alignment of organizational culture"
+      ],
+      "challenging": "NO",
+      "benefits": [
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 7,
+      "gender": "Female",
+      "education": "DEGREE",
+      "age": "31-40",
+      "experience": "Above 10 years",
+      "department": "SYNTHETIC TEST 007 — Internal Audit",
+      "position": "Internal Auditor (test persona)",
+      "B": [
+        2,
+        2,
+        2,
+        2,
+        3,
+        1,
+        2
+      ],
+      "C": [
+        2,
+        1,
+        2,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "D": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        1,
+        2,
+        1,
+        3
+      ],
+      "challenges": [
+        "Lack of trust"
+      ],
+      "challenging": "NO",
+      "benefits": [
+        "Lowers transaction cost"
+      ]
+    },
+    {
+      "id": 8,
+      "gender": "Male",
+      "education": "DEGREE",
+      "age": "40 and Above",
+      "experience": "Above 10 years",
+      "department": "SYNTHETIC TEST 008 — Transport",
+      "position": "Transport Officer (test persona)",
+      "B": [
+        4,
+        3,
+        3,
+        4,
+        2,
+        3,
+        3
+      ],
+      "C": [
+        3,
+        4,
+        3,
+        5,
+        5,
+        4,
+        4,
+        3,
+        4
+      ],
+      "D": [
+        2,
+        2,
+        3,
+        3,
+        3,
+        2,
+        3,
+        2,
+        3
+      ],
+      "challenges": [
+        "Insufficient Infrastructure",
+        ". Lack of supplier commitment",
+        "Lack of trust",
+        "Poor alignment of organizational culture"
+      ],
+      "challenging": "Yes",
+      "benefits": [
+        "Lowers transaction cost",
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 9,
+      "gender": "Female",
+      "education": "DEGREE",
+      "age": "20-24",
+      "experience": "Below 5 years",
+      "department": "SYNTHETIC TEST 009 — Budget",
+      "position": "Budget Analyst (test persona)",
+      "B": [
+        3,
+        5,
+        5,
+        4,
+        4,
+        4,
+        5
+      ],
+      "C": [
+        2,
+        1,
+        2,
+        2,
+        1,
+        2,
+        2,
+        3,
+        2
+      ],
+      "D": [
+        5,
+        3,
+        3,
+        3,
+        4,
+        4,
+        4,
+        4,
+        4
+      ],
+      "challenges": [
+        "Insufficient Infrastructure"
+      ],
+      "challenging": "NO",
+      "benefits": [
+        "Lowers transaction cost",
+        "Reduced paper work",
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 10,
+      "gender": "Male",
+      "education": "MASTERS",
+      "age": "25-30",
+      "experience": "5-10 years",
+      "department": "SYNTHETIC TEST 010 — Stores",
+      "position": "Stores Officer (test persona)",
+      "B": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5
+      ],
+      "C": [
+        5,
+        5,
+        5,
+        4,
+        5,
+        5,
+        4,
+        5,
+        5
+      ],
+      "D": [
+        5,
+        4,
+        5,
+        4,
+        5,
+        5,
+        4,
+        5,
+        5
+      ],
+      "challenges": [
+        "Insufficient Infrastructure",
+        ". Lack of supplier commitment",
+        "Lack of trust",
+        "Poor alignment of organizational culture"
+      ],
+      "challenging": "Yes",
+      "benefits": [
+        "Lowers transaction cost",
+        "Reduced paper work",
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 11,
+      "gender": "Female",
+      "education": "MASTERS",
+      "age": "31-40",
+      "experience": "5-10 years",
+      "department": "SYNTHETIC TEST 011 — Procurement",
+      "position": "Procurement Officer (test persona)",
+      "B": [
+        1,
+        2,
+        1,
+        2,
+        1,
+        1,
+        2
+      ],
+      "C": [
+        4,
+        4,
+        3,
+        3,
+        4,
+        3,
+        3,
+        3,
+        4
+      ],
+      "D": [
+        1,
+        1,
+        2,
+        1,
+        1,
+        2,
+        1,
+        1,
+        1
+      ],
+      "challenges": [
+        "Insufficient Infrastructure",
+        ". Lack of supplier commitment",
+        "Lack of trust",
+        "Poor alignment of organizational culture"
+      ],
+      "challenging": "Yes",
+      "benefits": [
+        "Reduced paper work"
+      ]
+    },
+    {
+      "id": 12,
+      "gender": "Male",
+      "education": "MASTERS",
+      "age": "40 and Above",
+      "experience": "Above 10 years",
+      "department": "SYNTHETIC TEST 012 — Planning",
+      "position": "Planning Officer (test persona)",
+      "B": [
+        1,
+        1,
+        2,
+        1,
+        2,
+        2,
+        2
+      ],
+      "C": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "D": [
+        2,
+        3,
+        2,
+        3,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "challenges": [
+        "Poor alignment of organizational culture"
+      ],
+      "challenging": "NO",
+      "benefits": [
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 13,
+      "gender": "Male",
+      "education": "SSSCE/WASSCE",
+      "age": "20-24",
+      "experience": "Below 5 years",
+      "department": "SYNTHETIC TEST 013 — Works",
+      "position": "Works Officer (test persona)",
+      "B": [
+        2,
+        3,
+        4,
+        2,
+        3,
+        4,
+        2
+      ],
+      "C": [
+        4,
+        4,
+        4,
+        4,
+        3,
+        4,
+        4,
+        4,
+        5
+      ],
+      "D": [
+        2,
+        3,
+        2,
+        2,
+        3,
+        2,
+        3,
+        3,
+        3
+      ],
+      "challenges": [
+        "Insufficient Infrastructure",
+        ". Lack of supplier commitment",
+        "Lack of trust",
+        "Poor alignment of organizational culture"
+      ],
+      "challenging": "Yes",
+      "benefits": [
+        "Lowers transaction cost"
+      ]
+    },
+    {
+      "id": 14,
+      "gender": "Female",
+      "education": "HND",
+      "age": "25-30",
+      "experience": "Below 5 years",
+      "department": "SYNTHETIC TEST 014 — Finance",
+      "position": "Accounts Officer (test persona)",
+      "B": [
+        4,
+        4,
+        4,
+        4,
+        5,
+        3,
+        4
+      ],
+      "C": [
+        1,
+        2,
+        2,
+        2,
+        2,
+        3,
+        2,
+        2,
+        1
+      ],
+      "D": [
+        4,
+        3,
+        5,
+        3,
+        5,
+        3,
+        4,
+        4,
+        4
+      ],
+      "challenges": [
+        "Lack of trust"
+      ],
+      "challenging": "NO",
+      "benefits": [
+        "Lowers transaction cost",
+        "Reduced paper work",
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 15,
+      "gender": "Male",
+      "education": "HND",
+      "age": "31-40",
+      "experience": "5-10 years",
+      "department": "SYNTHETIC TEST 015 — IT",
+      "position": "IT Support Officer (test persona)",
+      "B": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5
+      ],
+      "C": [
+        5,
+        4,
+        5,
+        5,
+        4,
+        5,
+        5,
+        5,
+        5
+      ],
+      "D": [
+        5,
+        5,
+        4,
+        4,
+        5,
+        5,
+        5,
+        5,
+        5
+      ],
+      "challenges": [
+        "Insufficient Infrastructure",
+        ". Lack of supplier commitment",
+        "Lack of trust",
+        "Poor alignment of organizational culture"
+      ],
+      "challenging": "Yes",
+      "benefits": [
+        "Lowers transaction cost",
+        "Reduced paper work",
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 16,
+      "gender": "Female",
+      "education": "HND",
+      "age": "40 and Above",
+      "experience": "5-10 years",
+      "department": "SYNTHETIC TEST 016 — Administration",
+      "position": "Administrative Officer (test persona)",
+      "B": [
+        1,
+        1,
+        1,
+        1,
+        2,
+        1,
+        1
+      ],
+      "C": [
+        2,
+        2,
+        3,
+        3,
+        4,
+        2,
+        3,
+        3,
+        3
+      ],
+      "D": [
+        1,
+        2,
+        1,
+        1,
+        1,
+        2,
+        1,
+        1,
+        1
+      ],
+      "challenges": [
+        "Insufficient Infrastructure",
+        ". Lack of supplier commitment"
+      ],
+      "challenging": "NO",
+      "benefits": [
+        "Lowers transaction cost"
+      ]
+    },
+    {
+      "id": 17,
+      "gender": "Female",
+      "education": "HND",
+      "age": "20-24",
+      "experience": "Below 5 years",
+      "department": "SYNTHETIC TEST 017 — Internal Audit",
+      "position": "Internal Auditor (test persona)",
+      "B": [
+        2,
+        2,
+        2,
+        1,
+        2,
+        1,
+        2
+      ],
+      "C": [
+        1,
+        1,
+        2,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "D": [
+        2,
+        1,
+        2,
+        3,
+        2,
+        3,
+        2,
+        2,
+        1
+      ],
+      "challenges": [
+        "Insufficient Infrastructure"
+      ],
+      "challenging": "NO",
+      "benefits": [
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 18,
+      "gender": "Male",
+      "education": "DEGREE",
+      "age": "25-30",
+      "experience": "Below 5 years",
+      "department": "SYNTHETIC TEST 018 — Transport",
+      "position": "Transport Officer (test persona)",
+      "B": [
+        5,
+        4,
+        5,
+        5,
+        5,
+        3,
+        3
+      ],
+      "C": [
+        3,
+        1,
+        4,
+        3,
+        2,
+        4,
+        2,
+        3,
+        2
+      ],
+      "D": [
+        4,
+        5,
+        3,
+        5,
+        4,
+        4,
+        5,
+        4,
+        4
+      ],
+      "challenges": [
+        "Lack of trust"
+      ],
+      "challenging": "NO",
+      "benefits": [
+        "Reduced paper work",
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 19,
+      "gender": "Female",
+      "education": "DEGREE",
+      "age": "31-40",
+      "experience": "Above 10 years",
+      "department": "SYNTHETIC TEST 019 — Budget",
+      "position": "Budget Analyst (test persona)",
+      "B": [
+        5,
+        3,
+        5,
+        5,
+        4,
+        4,
+        3
+      ],
+      "C": [
+        3,
+        2,
+        4,
+        3,
+        2,
+        4,
+        2,
+        4,
+        3
+      ],
+      "D": [
+        5,
+        5,
+        4,
+        5,
+        5,
+        4,
+        5,
+        4,
+        4
+      ],
+      "challenges": [
+        "Insufficient Infrastructure",
+        "Lack of trust"
+      ],
+      "challenging": "NO",
+      "benefits": [
+        "Reduced paper work",
+        "Lowers transaction cost",
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 20,
+      "gender": "Male",
+      "education": "DEGREE",
+      "age": "40 and Above",
+      "experience": "Above 10 years",
+      "department": "SYNTHETIC TEST 020 — Stores",
+      "position": "Stores Officer (test persona)",
+      "B": [
+        2,
+        4,
+        2,
+        1,
+        3,
+        3,
+        2
+      ],
+      "C": [
+        5,
+        3,
+        4,
+        4,
+        3,
+        4,
+        3,
+        5,
+        5
+      ],
+      "D": [
+        1,
+        2,
+        2,
+        4,
+        3,
+        4,
+        3,
+        1,
+        3
+      ],
+      "challenges": [
+        "Insufficient Infrastructure",
+        "Lack of trust"
+      ],
+      "challenging": "Yes",
+      "benefits": [
+        "Reduced paper work",
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 21,
+      "gender": "Male",
+      "education": "DEGREE",
+      "age": "20-24",
+      "experience": "Below 5 years",
+      "department": "SYNTHETIC TEST 021 — Procurement",
+      "position": "Procurement Assistant (test persona)",
+      "B": [
+        3,
+        2,
+        4,
+        3,
+        2,
+        2,
+        2
+      ],
+      "C": [
+        5,
+        5,
+        3,
+        4,
+        4,
+        2,
+        3,
+        5,
+        3
+      ],
+      "D": [
+        3,
+        3,
+        1,
+        3,
+        3,
+        4,
+        3,
+        2,
+        3
+      ],
+      "challenges": [
+        "Insufficient Infrastructure",
+        ". Lack of supplier commitment",
+        "Poor alignment of organizational culture"
+      ],
+      "challenging": "Yes",
+      "benefits": [
+        "Reduced paper work"
+      ]
+    },
+    {
+      "id": 22,
+      "gender": "Female",
+      "education": "MASTERS",
+      "age": "25-30",
+      "experience": "5-10 years",
+      "department": "SYNTHETIC TEST 022 — Planning",
+      "position": "Planning Officer (test persona)",
+      "B": [
+        4,
+        3,
+        5,
+        5,
+        3,
+        3,
+        2
+      ],
+      "C": [
+        3,
+        3,
+        5,
+        3,
+        3,
+        4,
+        2,
+        5,
+        3
+      ],
+      "D": [
+        4,
+        4,
+        4,
+        5,
+        4,
+        4,
+        5,
+        2,
+        4
+      ],
+      "challenges": [
+        "Insufficient Infrastructure",
+        "Lack of trust"
+      ],
+      "challenging": "Yes",
+      "benefits": [
+        "Reduced paper work",
+        "Lowers transaction cost",
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 23,
+      "gender": "Male",
+      "education": "MASTERS",
+      "age": "31-40",
+      "experience": "5-10 years",
+      "department": "SYNTHETIC TEST 023 — Works",
+      "position": "Works Officer (test persona)",
+      "B": [
+        4,
+        2,
+        5,
+        3,
+        1,
+        2,
+        2
+      ],
+      "C": [
+        5,
+        4,
+        4,
+        5,
+        3,
+        3,
+        3,
+        4,
+        3
+      ],
+      "D": [
+        3,
+        4,
+        1,
+        3,
+        2,
+        3,
+        3,
+        3,
+        3
+      ],
+      "challenges": [
+        "Insufficient Infrastructure",
+        "Poor alignment of organizational culture"
+      ],
+      "challenging": "Yes",
+      "benefits": [
+        "Reduced paper work"
+      ]
+    },
+    {
+      "id": 24,
+      "gender": "Female",
+      "education": "MASTERS",
+      "age": "40 and Above",
+      "experience": "Above 10 years",
+      "department": "Finance",
+      "position": "Accounts Officer",
+      "B": [
+        3,
+        4,
+        5,
+        3,
+        4,
+        3,
+        3
+      ],
+      "C": [
+        3,
+        2,
+        4,
+        4,
+        3,
+        3,
+        2,
+        4,
+        3
+      ],
+      "D": [
+        3,
+        3,
+        3,
+        4,
+        2,
+        4,
+        4,
+        3,
+        4
+      ],
+      "challenges": [
+        "Insufficient Infrastructure"
+      ],
+      "challenging": "NO",
+      "benefits": [
+        "Reduced paper work",
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 25,
+      "gender": "Female",
+      "education": "SSSCE/WASSCE",
+      "age": "20-24",
+      "experience": "Below 5 years",
+      "department": "IT",
+      "position": "IT Support Assistant",
+      "B": [
+        4,
+        4,
+        5,
+        5,
+        4,
+        3,
+        2
+      ],
+      "C": [
+        4,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        4,
+        3
+      ],
+      "D": [
+        4,
+        5,
+        3,
+        5,
+        4,
+        4,
+        4,
+        4,
+        3
+      ],
+      "challenges": [
+        "Insufficient Infrastructure"
+      ],
+      "challenging": "NO",
+      "benefits": [
+        "Reduced paper work",
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 26,
+      "gender": "Male",
+      "education": "HND",
+      "age": "25-30",
+      "experience": "Below 5 years",
+      "department": "Administration",
+      "position": "Administrative Officer",
+      "B": [
+        3,
+        4,
+        4,
+        4,
+        4,
+        3,
+        2
+      ],
+      "C": [
+        2,
+        2,
+        4,
+        3,
+        4,
+        3,
+        4,
+        4,
+        4
+      ],
+      "D": [
+        3,
+        2,
+        4,
+        4,
+        3,
+        4,
+        5,
+        3,
+        3
+      ],
+      "challenges": [
+        "Insufficient Infrastructure",
+        ". Lack of supplier commitment"
+      ],
+      "challenging": "Yes",
+      "benefits": [
+        "Reduced paper work",
+        "Lowers transaction cost",
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 27,
+      "gender": "Female",
+      "education": "HND",
+      "age": "31-40",
+      "experience": "5-10 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        5,
+        3,
+        5,
+        5,
+        3,
+        3,
+        3
+      ],
+      "C": [
+        3,
+        2,
+        3,
+        2,
+        1,
+        4,
+        2,
+        3,
+        1
+      ],
+      "D": [
+        3,
+        5,
+        4,
+        5,
+        5,
+        4,
+        5,
+        5,
+        5
+      ],
+      "challenges": [
+        "Lack of trust"
+      ],
+      "challenging": "NO",
+      "benefits": [
+        "Reduced paper work",
+        "Lowers transaction cost",
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 28,
+      "gender": "Male",
+      "education": "HND",
+      "age": "40 and Above",
+      "experience": "5-10 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        2,
+        3,
+        3,
+        2,
+        2,
+        2,
+        1
+      ],
+      "C": [
+        3,
+        4,
+        5,
+        5,
+        3,
+        4,
+        2,
+        5,
+        4
+      ],
+      "D": [
+        2,
+        3,
+        2,
+        3,
+        4,
+        3,
+        4,
+        2,
+        4
+      ],
+      "challenges": [
+        "Insufficient Infrastructure",
+        "Lack of trust",
+        "Poor alignment of organizational culture"
+      ],
+      "challenging": "Yes",
+      "benefits": [
+        "Reduced paper work"
+      ]
+    },
+    {
+      "id": 29,
+      "gender": "Male",
+      "education": "HND",
+      "age": "20-24",
+      "experience": "Below 5 years",
+      "department": "Budget",
+      "position": "Budget Assistant",
+      "B": [
+        2,
+        3,
+        4,
+        4,
+        2,
+        2,
+        2
+      ],
+      "C": [
+        5,
+        4,
+        4,
+        4,
+        4,
+        3,
+        3,
+        5,
+        3
+      ],
+      "D": [
+        3,
+        4,
+        2,
+        2,
+        3,
+        3,
+        3,
+        3,
+        2
+      ],
+      "challenges": [
+        "Insufficient Infrastructure",
+        ". Lack of supplier commitment",
+        "Poor alignment of organizational culture"
+      ],
+      "challenging": "Yes",
+      "benefits": [
+        "Reduced paper work"
+      ]
+    },
+    {
+      "id": 30,
+      "gender": "Female",
+      "education": "DEGREE",
+      "age": "25-30",
+      "experience": "Below 5 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        4,
+        3,
+        5,
+        4,
+        3,
+        3,
+        3
+      ],
+      "C": [
+        4,
+        3,
+        4,
+        3,
+        3,
+        4,
+        3,
+        4,
+        3
+      ],
+      "D": [
+        4,
+        4,
+        3,
+        4,
+        4,
+        5,
+        5,
+        3,
+        5
+      ],
+      "challenges": [
+        "Insufficient Infrastructure",
+        "Lack of trust"
+      ],
+      "challenging": "Yes",
+      "benefits": [
+        "Reduced paper work",
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 31,
+      "gender": "Male",
+      "education": "DEGREE",
+      "age": "31-40",
+      "experience": "Above 10 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        4,
+        3,
+        5,
+        4,
+        3,
+        2,
+        2
+      ],
+      "C": [
+        4,
+        4,
+        4,
+        4,
+        5,
+        4,
+        3,
+        4,
+        4
+      ],
+      "D": [
+        2,
+        4,
+        2,
+        3,
+        3,
+        4,
+        3,
+        4,
+        3
+      ],
+      "challenges": [
+        "Insufficient Infrastructure",
+        ". Lack of supplier commitment",
+        "Lack of trust",
+        "Poor alignment of organizational culture"
+      ],
+      "challenging": "Yes",
+      "benefits": [
+        "Reduced paper work"
+      ]
+    },
+    {
+      "id": 32,
+      "gender": "Female",
+      "education": "DEGREE",
+      "age": "40 and Above",
+      "experience": "Above 10 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        4,
+        3,
+        4,
+        3,
+        2,
+        2,
+        2
+      ],
+      "C": [
+        5,
+        5,
+        4,
+        5,
+        4,
+        3,
+        4,
+        4,
+        3
+      ],
+      "D": [
+        3,
+        4,
+        2,
+        4,
+        4,
+        5,
+        3,
+        3,
+        3
+      ],
+      "challenges": [
+        "Insufficient Infrastructure",
+        ". Lack of supplier commitment",
+        "Poor alignment of organizational culture"
+      ],
+      "challenging": "Yes",
+      "benefits": [
+        "Reduced paper work",
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 33,
+      "gender": "Female",
+      "education": "DEGREE",
+      "age": "20-24",
+      "experience": "Below 5 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        3,
+        2,
+        3,
+        4,
+        3,
+        3,
+        2
+      ],
+      "C": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        5,
+        2
+      ],
+      "D": [
+        2,
+        4,
+        3,
+        4,
+        3,
+        4,
+        4,
+        3,
+        3
+      ],
+      "challenges": [
+        "Insufficient Infrastructure"
+      ],
+      "challenging": "NO",
+      "benefits": [
+        "Reduced paper work",
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 34,
+      "gender": "Male",
+      "education": "MASTERS",
+      "age": "25-30",
+      "experience": "5-10 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        4,
+        3,
+        4,
+        5,
+        2,
+        2,
+        2
+      ],
+      "C": [
+        3,
+        5,
+        3,
+        4,
+        4,
+        4,
+        2,
+        4,
+        2
+      ],
+      "D": [
+        3,
+        4,
+        3,
+        4,
+        5,
+        5,
+        4,
+        3,
+        4
+      ],
+      "challenges": [
+        "Insufficient Infrastructure",
+        ". Lack of supplier commitment",
+        "Lack of trust",
+        "Poor alignment of organizational culture"
+      ],
+      "challenging": "Yes",
+      "benefits": [
+        "Reduced paper work",
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 35,
+      "gender": "Female",
+      "education": "MASTERS",
+      "age": "31-40",
+      "experience": "5-10 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        3,
+        3,
+        4,
+        4,
+        2,
+        3,
+        2
+      ],
+      "C": [
+        5,
+        3,
+        5,
+        4,
+        5,
+        3,
+        3,
+        4,
+        3
+      ],
+      "D": [
+        4,
+        4,
+        1,
+        3,
+        4,
+        3,
+        4,
+        3,
+        3
+      ],
+      "challenges": [
+        "Insufficient Infrastructure",
+        ". Lack of supplier commitment"
+      ],
+      "challenging": "Yes",
+      "benefits": [
+        "Reduced paper work"
+      ]
+    },
+    {
+      "id": 36,
+      "gender": "Male",
+      "education": "MASTERS",
+      "age": "40 and Above",
+      "experience": "Above 10 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        2,
+        3,
+        3,
+        2,
+        2,
+        2,
+        2
+      ],
+      "C": [
+        4,
+        4,
+        5,
+        4,
+        3,
+        4,
+        4,
+        4,
+        5
+      ],
+      "D": [
+        2,
+        3,
+        2,
+        2,
+        3,
+        3,
+        3,
+        2,
+        3
+      ],
+      "challenges": [
+        "Insufficient Infrastructure",
+        "Lack of trust",
+        "Poor alignment of organizational culture"
+      ],
+      "challenging": "Yes",
+      "benefits": [
+        "Reduced paper work"
+      ]
+    },
+    {
+      "id": 37,
+      "gender": "Male",
+      "education": "SSSCE/WASSCE",
+      "age": "20-24",
+      "experience": "Below 5 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        3,
+        3,
+        4,
+        4,
+        4,
+        3,
+        3
+      ],
+      "C": [
+        4,
+        3,
+        4,
+        3,
+        3,
+        3,
+        2,
+        4,
+        4
+      ],
+      "D": [
+        3,
+        4,
+        3,
+        4,
+        3,
+        4,
+        4,
+        2,
+        3
+      ],
+      "challenges": [
+        "Insufficient Infrastructure"
+      ],
+      "challenging": "Yes",
+      "benefits": [
+        "Reduced paper work",
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 38,
+      "gender": "Female",
+      "education": "HND",
+      "age": "25-30",
+      "experience": "Below 5 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        3,
+        2,
+        5,
+        3,
+        3,
+        3,
+        3
+      ],
+      "C": [
+        4,
+        3,
+        5,
+        3,
+        3,
+        3,
+        3,
+        5,
+        2
+      ],
+      "D": [
+        2,
+        3,
+        3,
+        4,
+        3,
+        5,
+        5,
+        4,
+        3
+      ],
+      "challenges": [
+        "Insufficient Infrastructure"
+      ],
+      "challenging": "Yes",
+      "benefits": [
+        "Reduced paper work",
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 39,
+      "gender": "Male",
+      "education": "HND",
+      "age": "31-40",
+      "experience": "5-10 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        5,
+        4,
+        5,
+        5,
+        5,
+        3,
+        3
+      ],
+      "C": [
+        3,
+        2,
+        3,
+        3,
+        2,
+        4,
+        1,
+        3,
+        2
+      ],
+      "D": [
+        4,
+        5,
+        4,
+        5,
+        4,
+        5,
+        5,
+        4,
+        4
+      ],
+      "challenges": [
+        "Lack of trust"
+      ],
+      "challenging": "NO",
+      "benefits": [
+        "Reduced paper work",
+        "Lowers transaction cost",
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 40,
+      "gender": "Female",
+      "education": "HND",
+      "age": "40 and Above",
+      "experience": "5-10 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        3,
+        4,
+        4,
+        4,
+        3,
+        3,
+        4
+      ],
+      "C": [
+        4,
+        3,
+        4,
+        3,
+        4,
+        3,
+        4,
+        4,
+        3
+      ],
+      "D": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        5,
+        5,
+        3,
+        4
+      ],
+      "challenges": [
+        "Insufficient Infrastructure",
+        ". Lack of supplier commitment"
+      ],
+      "challenging": "Yes",
+      "benefits": [
+        "Reduced paper work"
+      ]
+    },
+    {
+      "id": 41,
+      "gender": "Female",
+      "education": "HND",
+      "age": "20-24",
+      "experience": "Below 5 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        3,
+        3,
+        4,
+        3,
+        1,
+        2,
+        2
+      ],
+      "C": [
+        4,
+        4,
+        4,
+        4,
+        4,
+        3,
+        3,
+        5,
+        3
+      ],
+      "D": [
+        3,
+        4,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        3
+      ],
+      "challenges": [
+        "Insufficient Infrastructure",
+        ". Lack of supplier commitment",
+        "Poor alignment of organizational culture"
+      ],
+      "challenging": "Yes",
+      "benefits": [
+        "Reduced paper work"
+      ]
+    },
+    {
+      "id": 42,
+      "gender": "Male",
+      "education": "DEGREE",
+      "age": "25-30",
+      "experience": "Below 5 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        4,
+        3,
+        5,
+        5,
+        4,
+        3,
+        3
+      ],
+      "C": [
+        2,
+        3,
+        4,
+        3,
+        2,
+        4,
+        2,
+        3,
+        2
+      ],
+      "D": [
+        4,
+        5,
+        4,
+        4,
+        5,
+        3,
+        4,
+        4,
+        3
+      ],
+      "challenges": [
+        "Lack of trust"
+      ],
+      "challenging": "NO",
+      "benefits": [
+        "Reduced paper work",
+        "Lowers transaction cost",
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 43,
+      "gender": "Female",
+      "education": "DEGREE",
+      "age": "31-40",
+      "experience": "Above 10 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        3,
+        4,
+        5,
+        3,
+        3,
+        3,
+        2
+      ],
+      "C": [
+        5,
+        3,
+        4,
+        2,
+        3,
+        2,
+        2,
+        4,
+        3
+      ],
+      "D": [
+        4,
+        4,
+        4,
+        3,
+        5,
+        3,
+        5,
+        3,
+        4
+      ],
+      "challenges": [
+        "Insufficient Infrastructure"
+      ],
+      "challenging": "NO",
+      "benefits": [
+        "Reduced paper work",
+        "Lowers transaction cost"
+      ]
+    },
+    {
+      "id": 44,
+      "gender": "Male",
+      "education": "DEGREE",
+      "age": "40 and Above",
+      "experience": "Above 10 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        4,
+        4,
+        5,
+        4,
+        3,
+        3,
+        1
+      ],
+      "C": [
+        4,
+        4,
+        5,
+        4,
+        3,
+        3,
+        2,
+        4,
+        2
+      ],
+      "D": [
+        4,
+        5,
+        2,
+        5,
+        3,
+        4,
+        4,
+        3,
+        4
+      ],
+      "challenges": [
+        "Insufficient Infrastructure",
+        "Poor alignment of organizational culture"
+      ],
+      "challenging": "Yes",
+      "benefits": [
+        "Reduced paper work",
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 45,
+      "gender": "Male",
+      "education": "DEGREE",
+      "age": "20-24",
+      "experience": "Below 5 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        3,
+        3,
+        4,
+        3,
+        1,
+        3,
+        2
+      ],
+      "C": [
+        5,
+        4,
+        4,
+        4,
+        4,
+        4,
+        3,
+        4,
+        3
+      ],
+      "D": [
+        3,
+        5,
+        2,
+        3,
+        3,
+        5,
+        2,
+        3,
+        3
+      ],
+      "challenges": [
+        "Insufficient Infrastructure",
+        ". Lack of supplier commitment",
+        "Lack of trust",
+        "Poor alignment of organizational culture"
+      ],
+      "challenging": "Yes",
+      "benefits": [
+        "Reduced paper work"
+      ]
+    },
+    {
+      "id": 46,
+      "gender": "Female",
+      "education": "MASTERS",
+      "age": "25-30",
+      "experience": "5-10 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        4,
+        4,
+        5,
+        4,
+        3,
+        3,
+        2
+      ],
+      "C": [
+        4,
+        2,
+        5,
+        3,
+        4,
+        3,
+        2,
+        4,
+        3
+      ],
+      "D": [
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        5,
+        3,
+        5
+      ],
+      "challenges": [
+        "Insufficient Infrastructure",
+        ". Lack of supplier commitment"
+      ],
+      "challenging": "Yes",
+      "benefits": [
+        "Reduced paper work",
+        "Lowers transaction cost",
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 47,
+      "gender": "Male",
+      "education": "MASTERS",
+      "age": "31-40",
+      "experience": "5-10 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        2,
+        4,
+        5,
+        3,
+        3,
+        2,
+        3
+      ],
+      "C": [
+        3,
+        2,
+        5,
+        2,
+        3,
+        2,
+        3,
+        3,
+        3
+      ],
+      "D": [
+        2,
+        4,
+        4,
+        3,
+        2,
+        4,
+        4,
+        3,
+        3
+      ],
+      "challenges": [
+        "Insufficient Infrastructure"
+      ],
+      "challenging": "NO",
+      "benefits": [
+        "Reduced paper work",
+        "Lowers transaction cost"
+      ]
+    },
+    {
+      "id": 48,
+      "gender": "Female",
+      "education": "MASTERS",
+      "age": "40 and Above",
+      "experience": "Above 10 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        3,
+        3,
+        4,
+        4,
+        2,
+        2,
+        2
+      ],
+      "C": [
+        4,
+        4,
+        4,
+        4,
+        4,
+        3,
+        3,
+        4,
+        3
+      ],
+      "D": [
+        3,
+        4,
+        1,
+        2,
+        4,
+        5,
+        3,
+        3,
+        4
+      ],
+      "challenges": [
+        "Insufficient Infrastructure",
+        ". Lack of supplier commitment",
+        "Poor alignment of organizational culture"
+      ],
+      "challenging": "Yes",
+      "benefits": [
+        "Reduced paper work"
+      ]
+    },
+    {
+      "id": 49,
+      "gender": "Female",
+      "education": "SSSCE/WASSCE",
+      "age": "20-24",
+      "experience": "Below 5 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        3,
+        3,
+        4,
+        2,
+        2,
+        1,
+        2
+      ],
+      "C": [
+        5,
+        5,
+        4,
+        4,
+        3,
+        2,
+        3,
+        4,
+        3
+      ],
+      "D": [
+        3,
+        3,
+        3,
+        2,
+        3,
+        4,
+        4,
+        3,
+        2
+      ],
+      "challenges": [
+        "Insufficient Infrastructure",
+        "Poor alignment of organizational culture"
+      ],
+      "challenging": "Yes",
+      "benefits": [
+        "Reduced paper work"
+      ]
+    },
+    {
+      "id": 50,
+      "gender": "Male",
+      "education": "HND",
+      "age": "25-30",
+      "experience": "Below 5 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        5,
+        3,
+        5,
+        5,
+        3,
+        3,
+        4
+      ],
+      "C": [
+        4,
+        2,
+        3,
+        3,
+        2,
+        4,
+        3,
+        3,
+        3
+      ],
+      "D": [
+        4,
+        5,
+        4,
+        4,
+        5,
+        4,
+        5,
+        4,
+        5
+      ],
+      "challenges": [
+        "Lack of trust"
+      ],
+      "challenging": "NO",
+      "benefits": [
+        "Reduced paper work",
+        "Lowers transaction cost",
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 51,
+      "gender": "Male",
+      "education": "DEGREE",
+      "age": "40 and Above",
+      "experience": "Above 10 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        4,
+        5,
+        5,
+        5,
+        5,
+        4,
+        3
+      ],
+      "C": [
+        3,
+        2,
+        3,
+        3,
+        2,
+        4,
+        2,
+        3,
+        3
+      ],
+      "D": [
+        4,
+        5,
+        3,
+        4,
+        5,
+        4,
+        5,
+        4,
+        4
+      ],
+      "challenges": [
+        "Lack of trust"
+      ],
+      "challenging": "NO",
+      "benefits": [
+        "Reduced paper work",
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 52,
+      "gender": "Male",
+      "education": "HND",
+      "age": "40 and Above",
+      "experience": "Above 10 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        5,
+        4,
+        4,
+        5,
+        5,
+        4,
+        3
+      ],
+      "C": [
+        3,
+        2,
+        2,
+        3,
+        2,
+        4,
+        2,
+        2,
+        3
+      ],
+      "D": [
+        4,
+        5,
+        3,
+        5,
+        5,
+        3,
+        4,
+        4,
+        5
+      ],
+      "challenges": [
+        "Lack of trust"
+      ],
+      "challenging": "NO",
+      "benefits": [
+        "Reduced paper work",
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 53,
+      "gender": "Female",
+      "education": "HND",
+      "age": "40 and Above",
+      "experience": "Above 10 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        3,
+        3,
+        3,
+        2,
+        3,
+        4,
+        2
+      ],
+      "C": [
+        4,
+        4,
+        5,
+        5,
+        3,
+        4,
+        3,
+        5,
+        5
+      ],
+      "D": [
+        1,
+        4,
+        3,
+        3,
+        3,
+        3,
+        4,
+        3,
+        2
+      ],
+      "challenges": [
+        "Insufficient Infrastructure",
+        "Lack of trust",
+        "Poor alignment of organizational culture"
+      ],
+      "challenging": "Yes",
+      "benefits": [
+        "Reduced paper work"
+      ]
+    },
+    {
+      "id": 54,
+      "gender": "Female",
+      "education": "HND",
+      "age": "40 and Above",
+      "experience": "Above 10 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        5,
+        4,
+        5,
+        5,
+        3,
+        2,
+        2
+      ],
+      "C": [
+        5,
+        2,
+        5,
+        3,
+        2,
+        3,
+        2,
+        5,
+        3
+      ],
+      "D": [
+        4,
+        3,
+        2,
+        4,
+        4,
+        3,
+        5,
+        3,
+        4
+      ],
+      "challenges": [
+        "Insufficient Infrastructure"
+      ],
+      "challenging": "Yes",
+      "benefits": [
+        "Reduced paper work",
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 55,
+      "gender": "Male",
+      "education": "MASTERS",
+      "age": "25-30",
+      "experience": "Below 5 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        2,
+        4,
+        4,
+        3,
+        1,
+        2,
+        2
+      ],
+      "C": [
+        4,
+        4,
+        5,
+        4,
+        3,
+        4,
+        3,
+        5,
+        4
+      ],
+      "D": [
+        3,
+        3,
+        1,
+        3,
+        3,
+        4,
+        4,
+        2,
+        3
+      ],
+      "challenges": [
+        "Insufficient Infrastructure",
+        "Lack of trust",
+        "Poor alignment of organizational culture"
+      ],
+      "challenging": "Yes",
+      "benefits": [
+        "Reduced paper work"
+      ]
+    },
+    {
+      "id": 56,
+      "gender": "Female",
+      "education": "HND",
+      "age": "20-24",
+      "experience": "Below 5 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        2,
+        2,
+        4,
+        2,
+        2,
+        2,
+        3
+      ],
+      "C": [
+        5,
+        5,
+        5,
+        4,
+        4,
+        4,
+        2,
+        5,
+        4
+      ],
+      "D": [
+        2,
+        3,
+        2,
+        2,
+        4,
+        4,
+        3,
+        3,
+        3
+      ],
+      "challenges": [
+        "Insufficient Infrastructure",
+        ". Lack of supplier commitment",
+        "Lack of trust",
+        "Poor alignment of organizational culture"
+      ],
+      "challenging": "Yes",
+      "benefits": [
+        "Reduced paper work"
+      ]
+    },
+    {
+      "id": 57,
+      "gender": "Male",
+      "education": "MASTERS",
+      "age": "40 and Above",
+      "experience": "Above 10 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        4,
+        3,
+        5,
+        4,
+        4,
+        3,
+        3
+      ],
+      "C": [
+        4,
+        2,
+        4,
+        4,
+        2,
+        5,
+        1,
+        3,
+        1
+      ],
+      "D": [
+        4,
+        5,
+        4,
+        4,
+        5,
+        4,
+        5,
+        5,
+        4
+      ],
+      "challenges": [
+        "Lack of trust"
+      ],
+      "challenging": "NO",
+      "benefits": [
+        "Reduced paper work",
+        "Lowers transaction cost",
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 58,
+      "gender": "Male",
+      "education": "DEGREE",
+      "age": "31-40",
+      "experience": "Above 10 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        4,
+        5,
+        5,
+        4,
+        2,
+        3,
+        2
+      ],
+      "C": [
+        5,
+        2,
+        3,
+        3,
+        3,
+        3,
+        2,
+        3,
+        3
+      ],
+      "D": [
+        4,
+        4,
+        3,
+        4,
+        4,
+        4,
+        5,
+        3,
+        3
+      ],
+      "challenges": [
+        "Insufficient Infrastructure"
+      ],
+      "challenging": "NO",
+      "benefits": [
+        "Reduced paper work",
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 59,
+      "gender": "Male",
+      "education": "SSSCE/WASSCE",
+      "age": "20-24",
+      "experience": "Below 5 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        3,
+        3,
+        3,
+        2,
+        3,
+        3,
+        1
+      ],
+      "C": [
+        4,
+        4,
+        5,
+        4,
+        3,
+        4,
+        3,
+        5,
+        4
+      ],
+      "D": [
+        2,
+        4,
+        2,
+        4,
+        3,
+        3,
+        3,
+        2,
+        3
+      ],
+      "challenges": [
+        "Insufficient Infrastructure",
+        "Lack of trust",
+        "Poor alignment of organizational culture"
+      ],
+      "challenging": "Yes",
+      "benefits": [
+        "Reduced paper work",
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 60,
+      "gender": "Female",
+      "education": "DEGREE",
+      "age": "25-30",
+      "experience": "Below 5 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        5,
+        4,
+        5,
+        3,
+        4,
+        3,
+        3
+      ],
+      "C": [
+        4,
+        2,
+        4,
+        2,
+        3,
+        3,
+        2,
+        5,
+        3
+      ],
+      "D": [
+        4,
+        4,
+        3,
+        5,
+        4,
+        4,
+        5,
+        3,
+        4
+      ],
+      "challenges": [
+        "Insufficient Infrastructure"
+      ],
+      "challenging": "NO",
+      "benefits": [
+        "Reduced paper work",
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 61,
+      "gender": "Female",
+      "education": "DEGREE",
+      "age": "40 and Above",
+      "experience": "Above 10 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        3,
+        2,
+        4,
+        2,
+        4,
+        3,
+        2
+      ],
+      "C": [
+        3,
+        3,
+        3,
+        3,
+        2,
+        2,
+        3,
+        4,
+        3
+      ],
+      "D": [
+        3,
+        3,
+        3,
+        4,
+        3,
+        5,
+        4,
+        3,
+        2
+      ],
+      "challenges": [
+        "Insufficient Infrastructure"
+      ],
+      "challenging": "NO",
+      "benefits": [
+        "Reduced paper work",
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 62,
+      "gender": "Male",
+      "education": "SSSCE/WASSCE",
+      "age": "20-24",
+      "experience": "Below 5 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        4,
+        4,
+        5,
+        4,
+        3,
+        3,
+        3
+      ],
+      "C": [
+        3,
+        2,
+        4,
+        3,
+        3,
+        4,
+        3,
+        3,
+        1
+      ],
+      "D": [
+        3,
+        5,
+        4,
+        3,
+        5,
+        5,
+        5,
+        4,
+        3
+      ],
+      "challenges": [
+        "Lack of trust"
+      ],
+      "challenging": "NO",
+      "benefits": [
+        "Reduced paper work",
+        "Lowers transaction cost"
+      ]
+    },
+    {
+      "id": 63,
+      "gender": "Female",
+      "education": "HND",
+      "age": "31-40",
+      "experience": "5-10 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        4,
+        2,
+        5,
+        5,
+        3,
+        1,
+        3
+      ],
+      "C": [
+        3,
+        4,
+        4,
+        3,
+        4,
+        3,
+        2,
+        3,
+        4
+      ],
+      "D": [
+        3,
+        4,
+        3,
+        4,
+        4,
+        4,
+        4,
+        2,
+        3
+      ],
+      "challenges": [
+        ". Lack of supplier commitment",
+        "Poor alignment of organizational culture"
+      ],
+      "challenging": "Yes",
+      "benefits": [
+        "Reduced paper work",
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 64,
+      "gender": "Female",
+      "education": "SSSCE/WASSCE",
+      "age": "20-24",
+      "experience": "Below 5 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        2,
+        3,
+        3,
+        2,
+        2,
+        3,
+        1
+      ],
+      "C": [
+        5,
+        3,
+        5,
+        4,
+        3,
+        5,
+        4,
+        4,
+        4
+      ],
+      "D": [
+        1,
+        3,
+        3,
+        3,
+        4,
+        4,
+        3,
+        2,
+        2
+      ],
+      "challenges": [
+        "Insufficient Infrastructure",
+        "Lack of trust"
+      ],
+      "challenging": "Yes",
+      "benefits": [
+        "Reduced paper work"
+      ]
+    },
+    {
+      "id": 65,
+      "gender": "Male",
+      "education": "HND",
+      "age": "40 and Above",
+      "experience": "Above 10 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        5,
+        3,
+        5,
+        5,
+        4,
+        3,
+        3
+      ],
+      "C": [
+        2,
+        3,
+        2,
+        2,
+        3,
+        4,
+        2,
+        3,
+        3
+      ],
+      "D": [
+        5,
+        4,
+        5,
+        4,
+        4,
+        3,
+        5,
+        4,
+        4
+      ],
+      "challenges": [
+        "Lack of trust"
+      ],
+      "challenging": "NO",
+      "benefits": [
+        "Reduced paper work",
+        "Lowers transaction cost",
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 66,
+      "gender": "Female",
+      "education": "DEGREE",
+      "age": "25-30",
+      "experience": "Below 5 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        4,
+        4,
+        4,
+        4,
+        4,
+        2,
+        3
+      ],
+      "C": [
+        3,
+        4,
+        5,
+        4,
+        2,
+        3,
+        2,
+        5,
+        2
+      ],
+      "D": [
+        3,
+        5,
+        3,
+        5,
+        5,
+        4,
+        5,
+        4,
+        4
+      ],
+      "challenges": [
+        "Insufficient Infrastructure",
+        "Poor alignment of organizational culture"
+      ],
+      "challenging": "Yes",
+      "benefits": [
+        "Reduced paper work",
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 67,
+      "gender": "Male",
+      "education": "MASTERS",
+      "age": "31-40",
+      "experience": "5-10 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        5,
+        4,
+        5,
+        4,
+        2,
+        2,
+        3
+      ],
+      "C": [
+        3,
+        3,
+        2,
+        3,
+        5,
+        4,
+        2,
+        3,
+        3
+      ],
+      "D": [
+        2,
+        5,
+        3,
+        3,
+        5,
+        3,
+        4,
+        4,
+        3
+      ],
+      "challenges": [
+        ". Lack of supplier commitment",
+        "Lack of trust"
+      ],
+      "challenging": "NO",
+      "benefits": [
+        "Reduced paper work"
+      ]
+    },
+    {
+      "id": 68,
+      "gender": "Female",
+      "education": "HND",
+      "age": "25-30",
+      "experience": "Below 5 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        4,
+        4,
+        5,
+        3,
+        3,
+        3,
+        2
+      ],
+      "C": [
+        4,
+        2,
+        4,
+        3,
+        3,
+        3,
+        2,
+        4,
+        2
+      ],
+      "D": [
+        4,
+        3,
+        4,
+        3,
+        3,
+        5,
+        5,
+        3,
+        3
+      ],
+      "challenges": [
+        "Insufficient Infrastructure"
+      ],
+      "challenging": "NO",
+      "benefits": [
+        "Reduced paper work",
+        "Lowers transaction cost"
+      ]
+    },
+    {
+      "id": 69,
+      "gender": "Female",
+      "education": "DEGREE",
+      "age": "40 and Above",
+      "experience": "Above 10 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        5,
+        3,
+        5,
+        5,
+        5,
+        3,
+        3
+      ],
+      "C": [
+        2,
+        3,
+        3,
+        4,
+        2,
+        4,
+        2,
+        3,
+        1
+      ],
+      "D": [
+        4,
+        5,
+        4,
+        5,
+        5,
+        4,
+        5,
+        4,
+        3
+      ],
+      "challenges": [
+        "Lack of trust"
+      ],
+      "challenging": "NO",
+      "benefits": [
+        "Reduced paper work",
+        "Lowers transaction cost",
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 70,
+      "gender": "Male",
+      "education": "DEGREE",
+      "age": "20-24",
+      "experience": "Below 5 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        4,
+        3,
+        5,
+        5,
+        3,
+        2,
+        3
+      ],
+      "C": [
+        3,
+        4,
+        3,
+        4,
+        4,
+        3,
+        2,
+        3,
+        4
+      ],
+      "D": [
+        4,
+        4,
+        2,
+        4,
+        4,
+        4,
+        4,
+        3,
+        3
+      ],
+      "challenges": [
+        ". Lack of supplier commitment",
+        "Poor alignment of organizational culture"
+      ],
+      "challenging": "Yes",
+      "benefits": [
+        "Reduced paper work",
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 71,
+      "gender": "Male",
+      "education": "MASTERS",
+      "age": "40 and Above",
+      "experience": "5-10 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        3,
+        3,
+        4,
+        4,
+        3,
+        2,
+        3
+      ],
+      "C": [
+        3,
+        4,
+        5,
+        2,
+        2,
+        3,
+        3,
+        4,
+        3
+      ],
+      "D": [
+        3,
+        3,
+        3,
+        4,
+        3,
+        3,
+        4,
+        2,
+        2
+      ],
+      "challenges": [
+        "Insufficient Infrastructure",
+        "Poor alignment of organizational culture"
+      ],
+      "challenging": "NO",
+      "benefits": [
+        "Reduced paper work",
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 72,
+      "gender": "Female",
+      "education": "HND",
+      "age": "25-30",
+      "experience": "5-10 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        4,
+        3,
+        4,
+        4,
+        2,
+        3,
+        3
+      ],
+      "C": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        4,
+        3,
+        5,
+        3
+      ],
+      "D": [
+        4,
+        3,
+        2,
+        4,
+        3,
+        4,
+        4,
+        4,
+        4
+      ],
+      "challenges": [
+        "Insufficient Infrastructure",
+        "Lack of trust"
+      ],
+      "challenging": "Yes",
+      "benefits": [
+        "Reduced paper work",
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 73,
+      "gender": "Female",
+      "education": "HND",
+      "age": "40 and Above",
+      "experience": "Above 10 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        2,
+        2,
+        4,
+        3,
+        1,
+        3,
+        1
+      ],
+      "C": [
+        5,
+        4,
+        5,
+        4,
+        3,
+        5,
+        3,
+        5,
+        3
+      ],
+      "D": [
+        1,
+        3,
+        1,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "challenges": [
+        "Insufficient Infrastructure",
+        "Lack of trust",
+        "Poor alignment of organizational culture"
+      ],
+      "challenging": "Yes",
+      "benefits": [
+        "Reduced paper work"
+      ]
+    },
+    {
+      "id": 74,
+      "gender": "Male",
+      "education": "DEGREE",
+      "age": "25-30",
+      "experience": "5-10 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        4,
+        3,
+        5,
+        3,
+        2,
+        2,
+        2
+      ],
+      "C": [
+        5,
+        3,
+        3,
+        4,
+        4,
+        2,
+        3,
+        4,
+        3
+      ],
+      "D": [
+        3,
+        4,
+        1,
+        2,
+        2,
+        3,
+        3,
+        3,
+        2
+      ],
+      "challenges": [
+        "Insufficient Infrastructure",
+        ". Lack of supplier commitment"
+      ],
+      "challenging": "Yes",
+      "benefits": [
+        "Reduced paper work"
+      ]
+    },
+    {
+      "id": 75,
+      "gender": "Female",
+      "education": "DEGREE",
+      "age": "40 and Above",
+      "experience": "Above 10 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        3,
+        4,
+        5,
+        4,
+        3,
+        3,
+        2
+      ],
+      "C": [
+        5,
+        3,
+        5,
+        3,
+        3,
+        3,
+        2,
+        3,
+        3
+      ],
+      "D": [
+        3,
+        3,
+        2,
+        4,
+        4,
+        4,
+        5,
+        4,
+        4
+      ],
+      "challenges": [
+        "Insufficient Infrastructure"
+      ],
+      "challenging": "Yes",
+      "benefits": [
+        "Reduced paper work",
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 76,
+      "gender": "Female",
+      "education": "HND",
+      "age": "40 and Above",
+      "experience": "Above 10 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        2,
+        4,
+        4,
+        3,
+        3,
+        3,
+        2
+      ],
+      "C": [
+        2,
+        4,
+        5,
+        2,
+        3,
+        3,
+        2,
+        5,
+        3
+      ],
+      "D": [
+        3,
+        3,
+        3,
+        5,
+        3,
+        3,
+        4,
+        3,
+        3
+      ],
+      "challenges": [
+        "Insufficient Infrastructure",
+        "Poor alignment of organizational culture"
+      ],
+      "challenging": "NO",
+      "benefits": [
+        "Reduced paper work",
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 77,
+      "gender": "Male",
+      "education": "DEGREE",
+      "age": "31-40",
+      "experience": "Above 10 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        4,
+        4,
+        3,
+        3,
+        3,
+        2,
+        2
+      ],
+      "C": [
+        5,
+        4,
+        4,
+        4,
+        4,
+        3,
+        3,
+        5,
+        3
+      ],
+      "D": [
+        3,
+        4,
+        2,
+        2,
+        3,
+        4,
+        3,
+        4,
+        3
+      ],
+      "challenges": [
+        "Insufficient Infrastructure",
+        ". Lack of supplier commitment",
+        "Poor alignment of organizational culture"
+      ],
+      "challenging": "Yes",
+      "benefits": [
+        "Reduced paper work"
+      ]
+    },
+    {
+      "id": 78,
+      "gender": "Female",
+      "education": "DEGREE",
+      "age": "20-24",
+      "experience": "Below 5 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        2,
+        4,
+        3,
+        2,
+        1,
+        3,
+        3
+      ],
+      "C": [
+        5,
+        5,
+        4,
+        4,
+        3,
+        4,
+        2,
+        5,
+        5
+      ],
+      "D": [
+        2,
+        3,
+        3,
+        3,
+        3,
+        3,
+        2,
+        1,
+        3
+      ],
+      "challenges": [
+        "Insufficient Infrastructure",
+        "Lack of trust",
+        "Poor alignment of organizational culture"
+      ],
+      "challenging": "Yes",
+      "benefits": [
+        "Reduced paper work"
+      ]
+    },
+    {
+      "id": 79,
+      "gender": "Female",
+      "education": "DEGREE",
+      "age": "20-24",
+      "experience": "Below 5 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        2,
+        3,
+        4,
+        3,
+        3,
+        2,
+        3
+      ],
+      "C": [
+        3,
+        3,
+        4,
+        2,
+        4,
+        2,
+        3,
+        4,
+        3
+      ],
+      "D": [
+        3,
+        3,
+        4,
+        5,
+        3,
+        5,
+        3,
+        4,
+        4
+      ],
+      "challenges": [
+        "Insufficient Infrastructure",
+        ". Lack of supplier commitment"
+      ],
+      "challenging": "NO",
+      "benefits": [
+        "Reduced paper work",
+        "Lowers transaction cost",
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 80,
+      "gender": "Male",
+      "education": "MASTERS",
+      "age": "31-40",
+      "experience": "Above 10 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        3,
+        3,
+        4,
+        3,
+        2,
+        1,
+        2
+      ],
+      "C": [
+        4,
+        5,
+        5,
+        4,
+        3,
+        4,
+        4,
+        3,
+        3
+      ],
+      "D": [
+        3,
+        4,
+        2,
+        4,
+        2,
+        4,
+        3,
+        3,
+        4
+      ],
+      "challenges": [
+        "Lack of trust",
+        "Poor alignment of organizational culture"
+      ],
+      "challenging": "Yes",
+      "benefits": [
+        "Reduced paper work",
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 81,
+      "gender": "Male",
+      "education": "DEGREE",
+      "age": "40 and Above",
+      "experience": "5-10 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        4,
+        5,
+        4,
+        5,
+        3,
+        3,
+        3
+      ],
+      "C": [
+        4,
+        2,
+        3,
+        3,
+        3,
+        4,
+        2,
+        2,
+        2
+      ],
+      "D": [
+        4,
+        5,
+        5,
+        4,
+        4,
+        4,
+        5,
+        3,
+        5
+      ],
+      "challenges": [
+        "Lack of trust"
+      ],
+      "challenging": "NO",
+      "benefits": [
+        "Reduced paper work",
+        "Lowers transaction cost",
+        "Minimizing time and errors in bidding"
+      ]
+    },
+    {
+      "id": 82,
+      "gender": "Female",
+      "education": "MASTERS",
+      "age": "40 and Above",
+      "experience": "Above 10 years",
+      "department": "procurement unit",
+      "position": "procurement officer",
+      "B": [
+        3,
+        2,
+        2,
+        2,
+        2,
+        4,
+        3
+      ],
+      "C": [
+        3,
+        4,
+        4,
+        4,
+        3,
+        3,
+        3,
+        4,
+        3
+      ],
+      "D": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        3,
+        4,
+        2,
+        2
+      ],
+      "challenges": [
+        "Insufficient Infrastructure",
+        "Poor alignment of organizational culture"
+      ],
+      "challenging": "Yes",
+      "benefits": [
+        "Reduced paper work"
+      ]
+    }
+  ],
+  "sectionQuestions": {
+    "B": [
+      "  - radiogroup \"Sekondi Takoradi Metropolitan Assembly in the Western region of Ghana (STMA) uses the Public Procurement e-procurement platform for procurement as directed by the Ministry of Finance Required question\":",
+      "  - radiogroup \"E-procurement platform is used for procuring Goods, Works, Consultancy, Non-Consultancy and Disposal of assets Required question\":",
+      "  - radiogroup \"Sekondi Takoradi Metropolitan Assembly in the Western region of Ghana (STMA) applies e-procurement through e-procurement platform for tender notification Required question\":",
+      "  - radiogroup \"Sekondi Takoradi Metropolitan Assembly in the Western region of Ghana (STMA) applies e-procurement for tender preparation and submission Required question\":",
+      "  - radiogroup \"Sekondi Takoradi Metropolitan Assembly in the Western region of Ghana (STMA) applies e-procurement for online tender evaluation and contract awarding Required question\":",
+      "  - radiogroup \"STMA applies e-procurement for creation and management of catalogue Required question\":",
+      "  - radiogroup \"Sekondi Takoradi Metropolitan Assembly in the Western region of Ghana (STMA) applies e-procurement for management of payments Required question\":"
+    ],
+    "C": [
+      "  - radiogroup \"Lack of adequate training is a barrier to the successful implementation of e-procurement. Required question\":",
+      "  - radiogroup \"Resistance to change among staff affects the implementation of e-procurement systems. Required question\":",
+      "  - radiogroup \"Budget constraints hinder the full implementation of e-procurement at Sekondi Takoradi Metropolitan Assembly in the Western region of Ghana (STMA.) Required question\":",
+      "  - radiogroup \"The Sekondi Takoradi Metropolitan Assembly in the Western region of Ghana (STMA) faces difficulties in integrating e-procurement systems with existing systems. Required question\":",
+      "  - radiogroup \"Suppliers and vendors are hesitant to adopt e-procurement systems Required question\":",
+      "  - radiogroup \"Cyber security concerns impact the implementation of e-procurement systems. Required question\":",
+      "  - radiogroup \"There is a lack of support from top management for the implementation of e-procurement Required question\":",
+      "  - radiogroup \"Insufficient infrastructure affects the successful use of e-procurement systems. Required question\":",
+      "  - radiogroup \"Regulatory and compliance issues pose challenges to the implementation of e-procurement at Sekondi Takoradi Metropolitan Assembly in the Western region of Ghana (STMA). Required question\":",
+      "  - radiogroup \"Have e-procurement activities undertaken been challenging? Required question\":"
+    ],
+    "D": [
+      "  - radiogroup \"E-procurement has significantly improved procurement efficiency at the Sekondi Takoradi Metropolitan Assembly in the Western region of Ghana (STMA). Required question\":",
+      "  - radiogroup \"The use of e-procurement systems has increased transparency in procurement processes. Required question\":",
+      "  - radiogroup \"E-procurement systems have led to substantial cost savings for the Sekondi Takoradi Metropolitan Assembly in the Western region of Ghana (STMA). Required question\":",
+      "  - radiogroup \"E-procurement systems have reduced the time required for procurement processes. Required question\":",
+      "  - radiogroup \"The accuracy of procurement data has improved with the use of e-procurement systems. Required question\":",
+      "  - radiogroup \"E-procurement systems have enhanced accountability in procurement activities. Required question\":",
+      "  - radiogroup \"E-procurement has facilitated better tracking and monitoring of procurement activities. Required question\":",
+      "  - radiogroup \"Supplier relationships have improved due to the transparency provided by e-procurement systems. Required question\":",
+      "  - radiogroup \"E-procurement systems have enabled better decision-making in procurement processes at the Sekondi Takoradi Metropolitan Assembly in the Western region of Ghana (STMA). Required question\":"
+    ]
+  }
+}
