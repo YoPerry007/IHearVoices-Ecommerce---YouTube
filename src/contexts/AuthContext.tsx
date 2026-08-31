@@ -64,6 +64,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [passwordRecovery, setPasswordRecovery] = useState(false);
+
   // Initialize auth state
   useEffect(() => {
     const handleAuthUrl = async (url: string | null) => {
@@ -106,7 +107,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        fetchProfile(session.user.id);
+        fetchProfile(session.user.id, true);
       } else {
         setLoading(false);
       }
@@ -121,7 +122,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUser(session?.user ?? null);
       
       if (session?.user) {
-        await fetchProfile(session.user.id);
+        await fetchProfile(session.user.id, false);
       } else {
         setProfile(null);
         setOrganization(null);
@@ -136,9 +137,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, []);
 
   // Fetch user profile
-  const fetchProfile = async (userId: string) => {
+  const fetchProfile = async (userId: string, showGlobalLoading: boolean = false) => {
     try {
-      setLoading(true);
+      if (showGlobalLoading) {
+        setLoading(true);
+      }
       
       const { data, error } = await supabase
         .from('profiles')
@@ -147,8 +150,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         .single();
 
       if (error) {
-        console.error('Error fetching profile:', error);
-        // If profile doesn't exist, create one
         if (error.code === 'PGRST116') {
           await createProfile(userId);
           return;
@@ -161,12 +162,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } catch (error) {
       console.error('Error in fetchProfile:', error);
     } finally {
-      setLoading(false);
+      if (showGlobalLoading) {
+        setLoading(false);
+      }
     }
   };
 
   const refreshAccount = async () => {
-    if (user?.id) await fetchProfile(user.id);
+    if (user?.id) await fetchProfile(user.id, false);
   };
 
   // Create user profile
@@ -248,16 +251,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const signOut = async () => {
     try {
       setLoading(true);
-      // Account switching only needs to revoke the session on this device.
-      // A global revoke can fail when offline or when another session has
-      // already expired, leaving the local app apparently signed in.
       const { error } = await supabase.auth.signOut({ scope: 'local' });
       return { error };
     } catch (error) {
       return { error: error as AuthError };
     } finally {
-      // Clear React state even if the network/auth endpoint is unavailable.
-      // The local scope call also removes the persisted SecureStore session.
       setSession(null);
       setUser(null);
       setProfile(null);
@@ -294,20 +292,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     await supabase.auth.signOut();
   };
 
-  // Update profile
+  // Update profile without triggering unmounting
   const updateProfile = async (updates: Partial<Profile>) => {
     try {
       if (!user) {
         return { error: new Error('No user logged in') };
       }
 
-      // Only update fields that exist in the database schema
       const validUpdates = {
         ...(updates.full_name !== undefined && { full_name: updates.full_name }),
         ...(updates.phone !== undefined && { phone: updates.phone }),
         ...(updates.avatar_url !== undefined && { avatar_url: updates.avatar_url }),
         updated_at: new Date().toISOString(),
       };
+
+      // Optimistic local state update
+      setProfile(prev => prev ? { ...prev, ...validUpdates } : null);
 
       const { error } = await supabase
         .from('profiles')
@@ -319,8 +319,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return { error };
       }
 
-      // Refresh profile
-      await fetchProfile(user.id);
+      // Background refresh without global loading
+      await fetchProfile(user.id, false);
       return { error: null };
     } catch (error) {
       console.error('Profile update error:', error);
@@ -331,8 +331,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Computed values
   const isAdmin = profile?.role === 'admin';
   const isStoreOwner = !isAdmin && !!organization;
-  const isCustomer = !!profile && !isAdmin && !organization;
-  const isAuthenticated = !!user && !!profile;
+  const isCustomer = !isAdmin && !organization; // Customers or any non-owner/non-admin
+  const isAuthenticated = !!user;
 
   const value: AuthContextType = {
     // State

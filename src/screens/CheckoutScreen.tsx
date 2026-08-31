@@ -79,14 +79,16 @@ const CheckoutScreen: React.FC<CheckoutScreenProps> = ({ navigation }) => {
   const processingFee = PaymentService.calculateProcessingFee(selectedPaymentMethodId, summary?.total || 0);
   const totalAmount = PaymentService.calculateTotalAmount(selectedPaymentMethodId, summary?.total || 0);
 
-  // Initialize form from profile
+  // Initialize form from profile once
+  const initializedRef = useRef(false);
   useEffect(() => {
-    if (profile) {
+    if (profile && !initializedRef.current) {
+      initializedRef.current = true;
       setShippingForm(prev => ({
         ...prev,
-        full_name: profile.full_name || '',
-        phone: profile.phone || '',
-        address: profile.address || '',
+        full_name: prev.full_name || profile.full_name || '',
+        phone: prev.phone || profile.phone || '',
+        address: prev.address || profile.address || '',
       }));
     }
   }, [profile]);
@@ -94,14 +96,13 @@ const CheckoutScreen: React.FC<CheckoutScreenProps> = ({ navigation }) => {
   // Form validation  
   const validateForm = (): boolean => {
     const errors: FormErrors = {};
-    const isTestMode = PaymentService.getTestMode();
 
     // Required fields
     if (!shippingForm.full_name.trim()) {
       errors.full_name = 'Full name is required';
     }
 
-    // Phone number validation - completely optional, only validate format if provided
+    // Phone number validation - optional, validate format if provided
     if (shippingForm.phone.trim() && !/^0[0-9]{9}$/.test(shippingForm.phone.replace(/\s/g, ''))) {
       errors.phone = 'Please enter a valid Ghana phone number (e.g., 0244567890)';
     }
@@ -146,18 +147,17 @@ const CheckoutScreen: React.FC<CheckoutScreenProps> = ({ navigation }) => {
     }
 
     setIsProcessing(true);
-    setOrderCreated(false); // Reset order creation flag for new payment
+    setOrderCreated(false);
     orderCreatedRef.current = false;
-    setProcessedPayments(new Set()); // Clear processed payments for new transaction
+    setProcessedPayments(new Set());
 
     try {
-      // Update user profile with shipping info
-      console.log('Updating user profile with shipping information');
-      await updateProfile({
+      // Save shipping info to profile in background (non-blocking)
+      updateProfile({
         full_name: shippingForm.full_name,
         phone: shippingForm.phone,
         address: shippingForm.address,
-      });
+      }).catch(err => console.warn('Background profile update skipped:', err));
 
       // Prepare payment data
       const reference = PaymentService.generateReference('IHV');
